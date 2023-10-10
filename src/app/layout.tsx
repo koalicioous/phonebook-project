@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import BaseProviders from "@/components/Providers/ClientProviders";
+import RootStyleRegistry from "./emotion";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <BaseProviders>{children}</BaseProviders>
+        <RootStyleRegistry>
+          <BaseProviders>{children}</BaseProviders>
+        </RootStyleRegistry>
       </body>
     </html>
   );
