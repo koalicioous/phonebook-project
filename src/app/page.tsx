@@ -2,6 +2,7 @@
 "use client";
 import { css } from "@emotion/react";
 import ContactsListWrapper from "@/components/ContactsListWrapper";
+import useGetContactList from "@/services/contact/hooks/useGetContactList";
 
 const containerStyle = css`
   display: flex;
@@ -12,6 +13,9 @@ const containerStyle = css`
 `;
 
 export default function Home() {
+  const { contacts } = useGetContactList();
+  console.log(contacts);
+
   return (
     <main css={containerStyle}>
       <ContactsListWrapper />

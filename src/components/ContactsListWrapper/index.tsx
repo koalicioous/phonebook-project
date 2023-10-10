@@ -7,7 +7,7 @@ const contactsListWrapperStyle = css`
   padding: 20px;
   width: 100%;
   height: 100%;
-  max-width: 500px;
+  max-width: 750px;
   margin: 0 auto;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
