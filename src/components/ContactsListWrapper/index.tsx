@@ -4,6 +4,7 @@ import { Contact } from "@/services/contact/types";
 import { css } from "@emotion/react";
 import ContactListItem from "../ContactListItem";
 import ConditionalRender from "../ConditionalRender";
+import AddContactModal from "../AddContactModal";
 
 type ContactListWrapperProps = {
   favorites: Contact[];
@@ -27,7 +28,9 @@ const ContactsListWrapper = ({
       <div css={contactListSectionStyle}>
         <div css={headingWrapperStyle}>
           <h1 css={headingStyle}>Contacts List</h1>
-          <button css={addButtonStyle}>+ Add Contact</button>
+          <AddContactModal>
+            <button css={addButtonStyle}>+ Add Contact</button>
+          </AddContactModal>
         </div>
         <div css={scrollableListStyle}>
           {contacts.map((contact) => {

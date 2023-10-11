@@ -13,8 +13,15 @@ const containerStyle = css`
 `;
 
 export default function Home() {
-  const { contacts, fetchMore } = useGetContactList();
-  console.log(contacts);
+  const { contacts } = useGetContactList({
+    variables: {
+      order_by: [
+        {
+          created_at: "desc",
+        },
+      ],
+    },
+  });
 
   return (
     <main css={containerStyle}>

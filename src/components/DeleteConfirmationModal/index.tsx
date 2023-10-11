@@ -15,11 +15,20 @@ from {
   }
 `;
 
+const overlayShowKeyframes = keyframes`
+from {
+  opacity: 0;
+}
+to {
+  opacity: 1;
+}
+`;
+
 const Overlay = styled(AlertDialog.Overlay)`
   background-color: rgba(0, 0, 0, 0.45);
   position: fixed;
   inset: 0;
-  animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  animation: ${overlayShowKeyframes} 150ms cubic-bezier(0.16, 1, 0.3, 1);
 `;
 
 const AlertDialogContent = styled(AlertDialog.Content)`
