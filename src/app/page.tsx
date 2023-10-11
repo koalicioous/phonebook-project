@@ -13,12 +13,12 @@ const containerStyle = css`
 `;
 
 export default function Home() {
-  const { contacts } = useGetContactList();
+  const { contacts, fetchMore } = useGetContactList();
   console.log(contacts);
 
   return (
     <main css={containerStyle}>
-      <ContactsListWrapper />
+      <ContactsListWrapper favorites={[]} contacts={contacts} />
     </main>
   );
 }
