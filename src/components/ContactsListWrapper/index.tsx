@@ -83,10 +83,10 @@ const headingStyle = css`
 
 const addButtonStyle = css`
   border: 1px solid #e0e0e0;
-  padding: 10px 20px;
+  padding: 8px 12px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 600;
   &:hover {
     background-color: #e0e0e0;

@@ -4,6 +4,8 @@ import { Contact } from "@/services/contact/types";
 import { css } from "@emotion/react";
 import ConditionalRender from "../ConditionalRender";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import DeleteConfirmationModal from "../DeleteConfirmationModal";
+import { useState } from "react";
 
 type ContactListItemProps = {
   contact: Contact;
@@ -16,6 +18,15 @@ const ContactNameFallback = ({ text }: { text: string }) => {
 const ContactListItem = ({ contact }: ContactListItemProps) => {
   const { firstName, lastName, phones } = contact;
   const hasPhoneNumber = phones?.length > 0;
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const toggleDeleteModal = () => {
+    setDeleteModalOpen((prev) => !prev);
+  };
+
+  const onOpenChange = (open: boolean) => {
+    setDeleteModalOpen(open);
+  };
   return (
     <div css={contactListItemStyle}>
       <div>
@@ -53,6 +64,10 @@ const ContactListItem = ({ contact }: ContactListItemProps) => {
         </div>
       </div>
       <div>
+        <DeleteConfirmationModal
+          open={deleteModalOpen}
+          onOpenChange={onOpenChange}
+        ></DeleteConfirmationModal>
         <DropdownMenu.Root>
           <DropdownMenu.Trigger css={actionTriggerButton}>
             ≡
@@ -67,7 +82,10 @@ const ContactListItem = ({ contact }: ContactListItemProps) => {
             <DropdownMenu.Item css={actionContentItemStyle} onSelect={() => {}}>
               Edit
             </DropdownMenu.Item>
-            <DropdownMenu.Item css={actionContentItemStyle} onSelect={() => {}}>
+            <DropdownMenu.Item
+              css={actionContentItemStyle}
+              onSelect={toggleDeleteModal}
+            >
               Delete
             </DropdownMenu.Item>
           </DropdownMenu.Content>
