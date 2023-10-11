@@ -25,7 +25,10 @@ const ContactsListWrapper = ({
         </ConditionalRender>
       </div>
       <div css={contactListSectionStyle}>
-        <h1 css={headingStyle}>Contacts List</h1>
+        <div css={headingWrapperStyle}>
+          <h1 css={headingStyle}>Contacts List</h1>
+          <button css={addButtonStyle}>+ Add Contact</button>
+        </div>
         <div css={scrollableListStyle}>
           {contacts.map((contact) => {
             return <ContactListItem key={contact.id} contact={contact} />;
@@ -63,12 +66,30 @@ const contactsListWrapperStyle = css`
   }
 `;
 
+const headingWrapperStyle = css`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+`;
+
 const headingStyle = css`
   font-size: 16px;
   font-weight: 600;
-  margin-bottom: 12px;
   @media (min-width: 600px) {
     font-size: 20px;
+  }
+`;
+
+const addButtonStyle = css`
+  border: 1px solid #e0e0e0;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  &:hover {
+    background-color: #e0e0e0;
   }
 `;
 
@@ -81,7 +102,7 @@ const contactListSectionStyle = css`
 `;
 
 const scrollableListStyle = css`
-  overflow-y: scroll;
+  overflow-y: auto;
   height: calc(100% - 40px);
 `;
 
