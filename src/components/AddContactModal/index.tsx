@@ -4,6 +4,117 @@ import styled from "@emotion/styled";
 import { keyframes, css } from "@emotion/react";
 
 import * as Dialog from "@radix-ui/react-dialog";
+import { useForm } from "react-hook-form";
+import { checkSpecialCharacter } from "@/utils/helper";
+
+type ContactInput = {
+  firstName: string;
+  lastName: string;
+  numbers: string[];
+};
+
+const AddContactModal = ({ children }: { children: React.ReactNode }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    getValues,
+  } = useForm<ContactInput>();
+
+  const onSubmit = (data: ContactInput) => {
+    console.log(data);
+  };
+
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger asChild>{children}</Dialog.Trigger>
+      <Dialog.Portal>
+        <DialogOverlay />
+        <DialogContent>
+          <DialogTitle>New Contact</DialogTitle>
+          <DialogDescription>
+            Insert detail to create new contact
+          </DialogDescription>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div
+              css={{
+                marginBottom: 16,
+              }}
+            >
+              <fieldset css={fieldset}>
+                <label css={label} htmlFor="firstName">
+                  First Name
+                </label>
+                <input
+                  css={input}
+                  id="firstName"
+                  placeholder="First Name"
+                  {...register("firstName", {
+                    required: "First Name is required",
+                    validate: {
+                      containsSpecialCharacter: (value) =>
+                        checkSpecialCharacter(value) ||
+                        "First Name cannot contain special character",
+                    },
+                  })}
+                />
+              </fieldset>
+              {errors.firstName && (
+                <span css={errorMessageText}>{errors.firstName.message}</span>
+              )}
+            </div>
+            <div
+              css={{
+                marginBottom: 16,
+              }}
+            >
+              <fieldset css={fieldset}>
+                <label css={label} htmlFor="lastName">
+                  Last Name
+                </label>
+                <input
+                  css={input}
+                  id="lastName"
+                  placeholder="Last Name"
+                  {...register("lastName", {
+                    required: "Last Name is required",
+                    validate: {
+                      containsSpecialCharacter: (value) =>
+                        checkSpecialCharacter(value) ||
+                        "Last Name cannot contain special character",
+                    },
+                  })}
+                />
+              </fieldset>
+              {errors.lastName && (
+                <span css={errorMessageText}>{errors.lastName.message}</span>
+              )}
+            </div>
+            <DialogTitle>Numbers</DialogTitle>
+            <div
+              style={{
+                display: "flex",
+                marginTop: 25,
+                justifyContent: "flex-end",
+              }}
+            >
+              <button type="submit" css={saveButton}>
+                Save Contact
+              </button>
+            </div>
+          </form>
+          <Dialog.Close asChild>
+            <button css={iconButton} aria-label="Close">
+              ✖
+            </button>
+          </Dialog.Close>
+        </DialogContent>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+};
+
+export default AddContactModal;
 
 const contentShowKeyframes = keyframes`
 from {
@@ -65,7 +176,7 @@ const fieldset = css`
   display: flex;
   gap: 20px;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 2px;
 `;
 
 const label = css`
@@ -127,50 +238,8 @@ const saveButton = css`
   }
 `;
 
-const AddContactModal = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <Dialog.Root>
-      <Dialog.Trigger asChild>{children}</Dialog.Trigger>
-      <Dialog.Portal>
-        <DialogOverlay />
-        <DialogContent>
-          <DialogTitle>New Contact</DialogTitle>
-          <DialogDescription>
-            Insert detail to create new contact
-          </DialogDescription>
-          <fieldset css={fieldset}>
-            <label css={label} htmlFor="firstName">
-              First Name
-            </label>
-            <input css={input} id="firstName" placeholder="First Name" />
-          </fieldset>
-          <fieldset css={fieldset}>
-            <label css={label} htmlFor="lastName">
-              Last Name
-            </label>
-            <input css={input} id="lastName" placeholder="Last Name" />
-          </fieldset>
-          <DialogTitle>Numbers</DialogTitle>
-          <div
-            style={{
-              display: "flex",
-              marginTop: 25,
-              justifyContent: "flex-end",
-            }}
-          >
-            <Dialog.Close asChild>
-              <button css={saveButton}>Save Contact</button>
-            </Dialog.Close>
-          </div>
-          <Dialog.Close asChild>
-            <button css={iconButton} aria-label="Close">
-              ✖
-            </button>
-          </Dialog.Close>
-        </DialogContent>
-      </Dialog.Portal>
-    </Dialog.Root>
-  );
-};
-
-export default AddContactModal;
+const errorMessageText = css`
+  color: #b91c1c;
+  font-size: 12px;
+  margin-left: 112px;
+`;
