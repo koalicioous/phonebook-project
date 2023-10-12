@@ -4,22 +4,33 @@ import styled from "@emotion/styled";
 import { keyframes, css } from "@emotion/react";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { useForm } from "react-hook-form";
-import { checkSpecialCharacter } from "@/utils/helper";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { checkSpecialCharacter, checkValidNumber } from "@/utils/helper";
+import ConditionalRender from "../ConditionalRender";
 
 type ContactInput = {
   firstName: string;
   lastName: string;
-  numbers: string[];
+  numbers: { value: string }[];
 };
 
 const AddContactModal = ({ children }: { children: React.ReactNode }) => {
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors },
     getValues,
-  } = useForm<ContactInput>();
+  } = useForm<ContactInput>({
+    defaultValues: {
+      numbers: [{ value: "" }],
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    name: "numbers",
+    control,
+  });
 
   const onSubmit = (data: ContactInput) => {
     console.log(data);
@@ -91,10 +102,83 @@ const AddContactModal = ({ children }: { children: React.ReactNode }) => {
               )}
             </div>
             <DialogTitle>Numbers</DialogTitle>
+            <div>
+              {fields.map((field, index) => {
+                return (
+                  <div
+                    key={field.id}
+                    css={{
+                      marginBottom: "12px",
+                    }}
+                  >
+                    <Controller
+                      control={control}
+                      name={`numbers.${index}.value`}
+                      defaultValue={field.value}
+                      rules={{
+                        required: "Contact's Number is required",
+                        validate: {
+                          validNumber: (value) =>
+                            checkValidNumber(value) ||
+                            "Contact's Number must be a number",
+                        },
+                      }}
+                      render={({ field }) => (
+                        <div>
+                          <div
+                            css={{
+                              display: "flex",
+                              gap: "8px",
+                            }}
+                          >
+                            <input
+                              css={input}
+                              placeholder="Contact's Number"
+                              {...field}
+                            />
+                            <ConditionalRender condition={fields.length > 1}>
+                              <button
+                                type="button"
+                                onClick={() => remove(index)}
+                                css={{
+                                  padding: "2px 4px",
+                                  color: "#64748b",
+                                }}
+                              >
+                                ⓧ
+                              </button>
+                            </ConditionalRender>
+                          </div>
+                          {errors?.numbers?.[index]?.value && (
+                            <span css={numberErrorMessageText}>
+                              {errors?.numbers?.[index]?.value?.message}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              css={{
+                fontSize: "12px",
+                backgroundColor: "#f1f5f9",
+                padding: "8px 8px",
+                width: "100%",
+                borderRadius: "8px",
+                marginTop: 8,
+              }}
+              onClick={() => append({ value: "" })}
+            >
+              Add Number
+            </button>
             <div
               style={{
                 display: "flex",
-                marginTop: 25,
+                marginTop: 32,
                 justifyContent: "flex-end",
               }}
             >
@@ -156,6 +240,7 @@ const DialogContent = styled(Dialog.Content)`
   max-width: 500px;
   max-height: 85vh;
   padding: 25px;
+  overflow: auto;
   animation: ${contentShowKeyframes} 150ms cubic-bezier(0.16, 1, 0.3, 1);
 `;
 
@@ -242,4 +327,9 @@ const errorMessageText = css`
   color: #b91c1c;
   font-size: 12px;
   margin-left: 112px;
+`;
+
+const numberErrorMessageText = css`
+  color: #b91c1c;
+  font-size: 12px;
 `;

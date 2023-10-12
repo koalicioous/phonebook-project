@@ -1,4 +1,8 @@
 export const checkSpecialCharacter = (value: string) => {
-  const invalidCharacters = /^[^\s~!@#$%^&*()_+|{}“:?><[\]\\;’,.\/=-]+$/;
+  const invalidCharacters = /^[^~!@#$%^&*()_+|{}“:?><[\]\\;’,.\/=-]+$/;
   return invalidCharacters.test(value);
+};
+
+export const checkValidNumber = (value: string) => {
+  return /^\+?\d+$/.test(value);
 };
