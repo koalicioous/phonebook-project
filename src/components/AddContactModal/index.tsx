@@ -113,6 +113,20 @@ const iconButton = css`
   }
 `;
 
+const saveButton = css`
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: #1e293b;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f8fafc;
+  cursor: pointer;
+  &:hover {
+    background-color: #0f172a;
+  }
+`;
+
 const AddContactModal = ({ children }: { children: React.ReactNode }) => {
   return (
     <Dialog.Root>
@@ -128,14 +142,15 @@ const AddContactModal = ({ children }: { children: React.ReactNode }) => {
             <label css={label} htmlFor="firstName">
               First Name
             </label>
-            <input css={input} id="firstName" defaultValue="Pedro Duarte" />
+            <input css={input} id="firstName" placeholder="First Name" />
           </fieldset>
           <fieldset css={fieldset}>
             <label css={label} htmlFor="lastName">
               Last Name
             </label>
-            <input css={input} id="lastName" defaultValue="@peduarte" />
+            <input css={input} id="lastName" placeholder="Last Name" />
           </fieldset>
+          <DialogTitle>Numbers</DialogTitle>
           <div
             style={{
               display: "flex",
@@ -144,7 +159,7 @@ const AddContactModal = ({ children }: { children: React.ReactNode }) => {
             }}
           >
             <Dialog.Close asChild>
-              <button className="Button green">Save changes</button>
+              <button css={saveButton}>Save Contact</button>
             </Dialog.Close>
           </div>
           <Dialog.Close asChild>

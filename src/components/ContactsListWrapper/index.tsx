@@ -5,6 +5,9 @@ import { css } from "@emotion/react";
 import ContactListItem from "../ContactListItem";
 import ConditionalRender from "../ConditionalRender";
 import AddContactModal from "../AddContactModal";
+import { useAtom } from "jotai";
+import { deleteConfirmationModalVisible } from "@/services/contact/atom";
+import DeleteConfirmationModal from "../DeleteConfirmationModal";
 
 type ContactListWrapperProps = {
   favorites: Contact[];
@@ -15,33 +18,43 @@ const ContactsListWrapper = ({
   favorites,
   contacts,
 }: ContactListWrapperProps) => {
+  const [deleteModalAtom, setDeleteModalAtom] = useAtom(
+    deleteConfirmationModalVisible
+  );
+
   return (
-    <div css={contactsListWrapperStyle}>
-      <div css={contactListSectionStyle}>
-        <h1 css={headingStyle}>Favorites</h1>
-        <ConditionalRender condition={favorites.length === 0}>
-          <div css={favoritesEmptyState}>
-            You have not added any favorites yet
+    <>
+      <DeleteConfirmationModal
+        open={deleteModalAtom}
+        onOpenChange={setDeleteModalAtom}
+      ></DeleteConfirmationModal>
+      <div css={contactsListWrapperStyle}>
+        <div css={contactListSectionStyle}>
+          <h1 css={headingStyle}>Favorites</h1>
+          <ConditionalRender condition={favorites.length === 0}>
+            <div css={favoritesEmptyState}>
+              You have not added any favorites yet
+            </div>
+          </ConditionalRender>
+        </div>
+        <div css={contactListSectionStyle}>
+          <div css={headingWrapperStyle}>
+            <h1 css={headingStyle}>Contacts List</h1>
+            <AddContactModal>
+              <button css={addButtonStyle}>+ Add Contact</button>
+            </AddContactModal>
           </div>
-        </ConditionalRender>
-      </div>
-      <div css={contactListSectionStyle}>
-        <div css={headingWrapperStyle}>
-          <h1 css={headingStyle}>Contacts List</h1>
-          <AddContactModal>
-            <button css={addButtonStyle}>+ Add Contact</button>
-          </AddContactModal>
-        </div>
-        <div css={scrollableListStyle}>
-          {contacts.map((contact) => {
-            return <ContactListItem key={contact.id} contact={contact} />;
-          })}
-          <button css={loadMoreButtonStyle} onClick={() => {}}>
-            Load More
-          </button>
+          <div css={scrollableListStyle}>
+            {contacts.map((contact) => {
+              return <ContactListItem key={contact.id} contact={contact} />;
+            })}
+            <button css={loadMoreButtonStyle} onClick={() => {}}>
+              Load More
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

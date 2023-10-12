@@ -3,6 +3,12 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import styled from "@emotion/styled";
 import { keyframes, css } from "@emotion/react";
+import { useAtom, useSetAtom } from "jotai";
+import {
+  deleteConfirmationModalData,
+  deleteConfirmationModalVisible,
+} from "@/services/contact/atom";
+import useDeleteContactMutation from "@/services/contact/hooks/useDeleteContactMutation";
 
 const contentShowKeyframes = keyframes`
 from {
@@ -98,6 +104,28 @@ const DeleteConfirmationModal = ({
   open: boolean;
   children?: React.ReactNode;
 }) => {
+  const [contact] = useAtom(deleteConfirmationModalData);
+  const setModalOpen = useSetAtom(deleteConfirmationModalVisible);
+
+  const contactNameCopy =
+    !!contact.firstName || !!contact.lastName
+      ? [contact.firstName, contact.lastName].join(" ")
+      : "No Name";
+
+  const { deleteContact, loading } = useDeleteContactMutation({
+    onCompleted: () => {
+      setModalOpen(false);
+    },
+  });
+
+  const handleDeleteContact = async () => {
+    await deleteContact({
+      variables: {
+        id: contact.id,
+      },
+    });
+  };
+
   return (
     <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
       <AlertDialog.Trigger asChild>
@@ -108,18 +136,21 @@ const DeleteConfirmationModal = ({
         <AlertDialogContent>
           <AlertDialogTitle>Are you to delete?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the
-            contact you choose to delete
+            This action will delete {contactNameCopy} permanently.
           </AlertDialogDescription>
           <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
             <AlertDialog.Cancel asChild>
-              <button css={cancelButtonStyle}>Cancel</button>
-            </AlertDialog.Cancel>
-            <AlertDialog.Action asChild>
-              <button css={confirmDeleteButtonStyle}>
-                Yes, delete contact
+              <button css={cancelButtonStyle} disabled={loading}>
+                Cancel
               </button>
-            </AlertDialog.Action>
+            </AlertDialog.Cancel>
+            <button
+              css={confirmDeleteButtonStyle}
+              disabled={loading}
+              onClick={handleDeleteContact}
+            >
+              {loading ? "Loading.." : "Yes, delete contact"}
+            </button>
           </div>
         </AlertDialogContent>
       </AlertDialog.Portal>

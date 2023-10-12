@@ -6,6 +6,11 @@ import ConditionalRender from "../ConditionalRender";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import { useState } from "react";
+import { useAtom, useSetAtom } from "jotai";
+import {
+  deleteConfirmationModalData,
+  deleteConfirmationModalVisible,
+} from "@/services/contact/atom";
 
 type ContactListItemProps = {
   contact: Contact;
@@ -18,15 +23,18 @@ const ContactNameFallback = ({ text }: { text: string }) => {
 const ContactListItem = ({ contact }: ContactListItemProps) => {
   const { firstName, lastName, phones } = contact;
   const hasPhoneNumber = phones?.length > 0;
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const setDeleteModalOpen = useSetAtom(deleteConfirmationModalVisible);
+  const setDeleteModalData = useSetAtom(deleteConfirmationModalData);
 
-  const toggleDeleteModal = () => {
-    setDeleteModalOpen((prev) => !prev);
+  const openDeleteModal = () => {
+    setDeleteModalOpen(true);
+    setDeleteModalData({
+      id: contact.id,
+      firstName: contact.firstName,
+      lastName: contact.lastName,
+    });
   };
 
-  const onOpenChange = (open: boolean) => {
-    setDeleteModalOpen(open);
-  };
   return (
     <div css={contactListItemStyle}>
       <div>
@@ -64,10 +72,6 @@ const ContactListItem = ({ contact }: ContactListItemProps) => {
         </div>
       </div>
       <div>
-        <DeleteConfirmationModal
-          open={deleteModalOpen}
-          onOpenChange={onOpenChange}
-        ></DeleteConfirmationModal>
         <DropdownMenu.Root>
           <DropdownMenu.Trigger css={actionTriggerButton}>
             ≡
@@ -84,7 +88,7 @@ const ContactListItem = ({ contact }: ContactListItemProps) => {
             </DropdownMenu.Item>
             <DropdownMenu.Item
               css={actionContentItemStyle}
-              onSelect={toggleDeleteModal}
+              onSelect={openDeleteModal}
             >
               Delete
             </DropdownMenu.Item>
