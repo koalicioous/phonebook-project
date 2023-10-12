@@ -5,22 +5,35 @@ import { keyframes, css } from "@emotion/react";
 
 import * as Dialog from "@radix-ui/react-dialog";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { checkSpecialCharacter, checkValidNumber } from "@/utils/helper";
+import {
+  checkSpecialCharacter,
+  checkValidNumber,
+  formatAddContactPayload,
+} from "@/utils/helper";
 import ConditionalRender from "../ConditionalRender";
-
-type ContactInput = {
-  firstName: string;
-  lastName: string;
-  numbers: { value: string }[];
-};
+import useCreateContactMutation from "@/services/contact/hooks/useCreateContactMutation";
+import { useAtom } from "jotai";
+import { createContactModalVisible } from "@/services/contact/atom";
+import { toast } from "react-hot-toast";
+import { ContactInput } from "@/services/contact/types";
+import { ApolloError } from "@apollo/client";
 
 const AddContactModal = ({ children }: { children: React.ReactNode }) => {
+  const [createModalVisible, setCreateModalVisible] = useAtom(
+    createContactModalVisible
+  );
+  const { createContact, loading } = useCreateContactMutation({
+    onCompleted: () => {
+      reset();
+      setCreateModalVisible(false);
+    },
+  });
   const {
     control,
     register,
     handleSubmit,
     formState: { errors },
-    getValues,
+    reset,
   } = useForm<ContactInput>({
     defaultValues: {
       numbers: [{ value: "" }],
@@ -32,12 +45,33 @@ const AddContactModal = ({ children }: { children: React.ReactNode }) => {
     control,
   });
 
-  const onSubmit = (data: ContactInput) => {
-    console.log(data);
+  const onSubmit = async (data: ContactInput) => {
+    const submission = new Promise(async (resolve, reject) => {
+      try {
+        const res = await createContact({
+          variables: {
+            ...formatAddContactPayload(data),
+          },
+        });
+        resolve(res);
+      } catch (err) {
+        if (err instanceof ApolloError) {
+          const errorMessage = err.message;
+          reject(errorMessage);
+        } else {
+          reject("Failed to save contact");
+        }
+      }
+    });
+    toast.promise(submission, {
+      loading: "Loading",
+      success: "The contact is saved!",
+      error: (err) => `Failed: ${err}`,
+    });
   };
 
   return (
-    <Dialog.Root>
+    <Dialog.Root open={createModalVisible} onOpenChange={setCreateModalVisible}>
       <Dialog.Trigger asChild>{children}</Dialog.Trigger>
       <Dialog.Portal>
         <DialogOverlay />
@@ -182,8 +216,8 @@ const AddContactModal = ({ children }: { children: React.ReactNode }) => {
                 justifyContent: "flex-end",
               }}
             >
-              <button type="submit" css={saveButton}>
-                Save Contact
+              <button type="submit" css={saveButton} disabled={loading}>
+                {loading ? "Loading..." : "Save Contact"}
               </button>
             </div>
           </form>

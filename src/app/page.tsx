@@ -3,6 +3,7 @@
 import { css } from "@emotion/react";
 import ContactsListWrapper from "@/components/ContactsListWrapper";
 import useGetContactList from "@/services/contact/hooks/useGetContactList";
+import { Toaster } from "react-hot-toast";
 
 const containerStyle = css`
   display: flex;
@@ -25,6 +26,7 @@ export default function Home() {
 
   return (
     <main css={containerStyle}>
+      <Toaster />
       <ContactsListWrapper favorites={[]} contacts={contacts} />
     </main>
   );

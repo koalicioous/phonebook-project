@@ -10,3 +10,5 @@ export const deleteConfirmationModalData = atom<{
   firstName: "",
   lastName: "",
 });
+
+export const createContactModalVisible = atom<boolean>(false);

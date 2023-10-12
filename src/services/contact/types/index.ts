@@ -33,6 +33,20 @@ type ContactSelectColumn =
   | "last_name"
   | "updated_at";
 
+export type ContactInput = {
+  firstName: string;
+  lastName: string;
+  numbers: { value: string }[];
+};
+
+export type AddContactPayload = {
+  first_name: string;
+  last_name: string;
+  phones: {
+    number: string;
+  }[];
+};
+
 export type ContactListQueryVariables = {
   distinct_on?: ContactSelectColumn[];
   limit?: number;
