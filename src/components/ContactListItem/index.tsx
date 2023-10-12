@@ -71,7 +71,13 @@ const ContactListItem = ({ contact }: ContactListItemProps) => {
           </div>
         </div>
       </div>
-      <div>
+      <div
+        css={{
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <button css={favoriteButton}>☆</button>
         <DropdownMenu.Root>
           <DropdownMenu.Trigger css={actionTriggerButton}>
             ≡
@@ -163,6 +169,15 @@ const actionContentItemStyle = css`
   &:hover {
     color: #374151;
     background-color: #f3f4f6;
+  }
+`;
+
+const favoriteButton = css`
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  &:hover {
+    background-color: #e5e7eb;
   }
 `;
 
