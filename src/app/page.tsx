@@ -34,7 +34,6 @@ export default function Home() {
       notifyOnNetworkStatusChange: true,
     },
   });
-  console.log(contacts.length);
 
   const loadMoreData = (newOffset: number) => {
     fetchMore({
