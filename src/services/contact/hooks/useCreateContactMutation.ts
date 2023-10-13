@@ -1,11 +1,10 @@
 import { MutationHookOptions, useMutation } from "@apollo/client";
 import { ADD_CONTACT_WITH_PHONES } from "../mutations";
 import { GET_CONTACT_LIST } from "../queries";
-import useContactPagination from "./useContactPagination";
-import { CONTACT_LIST_QUERY_LIMIT } from "@/utils/contants";
+import useGetContactAggregate from "./useGetContactAggregate";
 
 const useCreateContactMutation = (options?: MutationHookOptions) => {
-  const { totalData } = useContactPagination();
+  const { count: totalData } = useGetContactAggregate();
   const [createContact, { loading, error }] = useMutation(
     ADD_CONTACT_WITH_PHONES,
     {

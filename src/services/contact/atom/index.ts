@@ -13,8 +13,7 @@ export const deleteConfirmationModalData = atom<Contact>({
 export const createContactModalVisible = atom<boolean>(false);
 
 /**
- * Contact Pagination Atom
+ * Contact Filter & Pagination Atom
  */
 
-export const totalContactDataAtom = atom<number>(0);
-export const hasNextPageAtom = atom<boolean>(false);
+export const searchQueryAtom = atom<string>("");

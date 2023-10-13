@@ -1,6 +1,6 @@
 import { QueryHookOptions, useQuery } from "@apollo/client";
 import { GET_CONTACT_LIST } from "../queries";
-import { ContactListQueryVariables, RawContact } from "../types";
+import { Contact, ContactListQueryVariables, RawContact } from "../types";
 import { formatRawContact } from "@/utils/formatter";
 import { useMemo } from "react";
 
@@ -23,7 +23,7 @@ const useGetContactList = ({
     ...options,
   });
 
-  const contacts = useMemo(() => {
+  const contacts: Contact[] = useMemo(() => {
     return formatRawContact(res?.data?.contact);
   }, [res]);
 

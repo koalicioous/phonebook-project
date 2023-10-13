@@ -64,3 +64,13 @@ export const GET_PHONE_LIST = gql`
     }
   }
 `;
+
+export const GET_CONTACT_COUNT = gql`
+  query contact_aggregate_fields {
+    contact_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+`;

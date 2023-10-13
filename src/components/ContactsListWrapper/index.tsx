@@ -6,42 +6,84 @@ import ContactListItem from "../ContactListItem";
 import ConditionalRender from "../ConditionalRender";
 import AddContactModal from "../AddContactModal";
 import { useAtom } from "jotai";
-import { deleteConfirmationModalVisible } from "@/services/contact/atom";
+import {
+  deleteConfirmationModalVisible,
+  searchQueryAtom,
+} from "@/services/contact/atom";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import LoadingAnimation from "../Spinner";
-import useContactPagination from "@/services/contact/hooks/useContactPagination";
 import useManageSavedContacts from "@/services/contact/hooks/useManageSavedContacts";
-import { useMemo } from "react";
+import { ChangeEvent, useMemo } from "react";
+import { CONTACT_LIST_QUERY_LIMIT } from "@/utils/contants";
+import useGetContactList from "@/services/contact/hooks/useGetContactList";
+import { debounce } from "@/utils/helper";
+import useGetContactAggregate from "@/services/contact/hooks/useGetContactAggregate";
 
-type ContactListWrapperProps = {
-  contacts: Contact[];
-  loading: boolean;
-  fetchMore: (newOffset: number) => void;
-};
-
-const ContactsListWrapper = ({
-  contacts,
-  loading,
-  fetchMore,
-}: ContactListWrapperProps) => {
+const ContactsListWrapper = () => {
+  const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
   const [deleteModalAtom, setDeleteModalAtom] = useAtom(
     deleteConfirmationModalVisible
   );
-  const { nextPageAvailable } = useContactPagination();
+
   const { saveContactToFavorite, savedContacts, removeSavedContact } =
     useManageSavedContacts();
-
-  const removeFromFavorite = (contact: Contact) => {
-    removeSavedContact(contact);
-  };
-
-  const saveToFavorite = (contact: Contact) => {
-    saveContactToFavorite(contact);
-  };
+  const { count } = useGetContactAggregate();
 
   const savedContactIds = useMemo(() => {
     return savedContacts.map((item) => item.id);
   }, [savedContacts]);
+
+  const { contacts, loading, fetchMore, refetch } = useGetContactList({
+    variables: {
+      order_by: [
+        {
+          created_at: "desc",
+        },
+      ],
+      offset: 0,
+      limit: CONTACT_LIST_QUERY_LIMIT,
+      ...(savedContactIds.length > 0 && {
+        where: {
+          _not: {
+            id: {
+              _in: savedContactIds,
+            },
+          },
+        },
+      }),
+    },
+    options: {
+      notifyOnNetworkStatusChange: true,
+    },
+  });
+
+  const hasNextPage = count > contacts.length + savedContactIds.length;
+
+  const loadMoreData = (newOffset: number) => {
+    fetchMore({
+      variables: {
+        offset: newOffset,
+      },
+    });
+  };
+
+  const removeFromFavorite = (contact: Contact) => {
+    removeSavedContact(contact);
+    setTimeout(() => {
+      refetch();
+    }, 100);
+  };
+
+  const saveToFavorite = (contact: Contact) => {
+    saveContactToFavorite(contact);
+    setTimeout(() => {
+      refetch();
+    }, 100);
+  };
+
+  const handleSearchContact = debounce((e: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, 500);
 
   return (
     <>
@@ -51,6 +93,14 @@ const ContactsListWrapper = ({
         onSuccess={removeFromFavorite}
       ></DeleteConfirmationModal>
       <div css={contactsListWrapperStyle}>
+        <div>
+          <input
+            type="text"
+            css={input}
+            placeholder="Type to search contact"
+            onChange={handleSearchContact}
+          />
+        </div>
         <div css={contactListSectionStyle}>
           <h1 css={headingStyle}>Favorites</h1>
           <ConditionalRender condition={savedContacts.length === 0}>
@@ -83,6 +133,7 @@ const ContactsListWrapper = ({
           <div css={scrollableListStyle}>
             {contacts
               .filter((item) => {
+                // TODO: Remove filter logic from here
                 return !savedContactIds.includes(item.id);
               })
               .map((contact) => {
@@ -96,7 +147,7 @@ const ContactsListWrapper = ({
                 );
               })}
             {loading && <LoadingAnimation />}
-            {!nextPageAvailable && contacts.length > 0 && (
+            {!hasNextPage && contacts.length > 0 && (
               <div
                 css={{
                   padding: "8px 16px",
@@ -106,18 +157,18 @@ const ContactsListWrapper = ({
                   alignItems: "center",
                   justifyContent: "center",
                   backgroundColor: "#f1f5f9",
-                  color: "#64748b",
+                  color: "#0f172a",
                   marginTop: "8px",
                 }}
               >
                 You have reached the end of list
               </div>
             )}
-            {nextPageAvailable && (
+            {hasNextPage && (
               <button
                 css={loadMoreButtonStyle}
                 onClick={() => {
-                  fetchMore(contacts.length);
+                  loadMoreData(contacts.length);
                 }}
               >
                 Load More
@@ -142,7 +193,7 @@ const contactsListWrapperStyle = css`
   height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 
   @media (max-width: 600px) {
     border-radius: 0;
@@ -218,6 +269,24 @@ const favoritesEmptyState = css`
   border-radius: 8px;
   width: 100%;
   height: 80%;
+`;
+
+const input = css`
+  width: 100%;
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  padding: 0 10px;
+  font-size: 15px;
+  line-height: 1;
+  color: #334155;
+  box-shadow: 0 0 0 1px #9ca3af;
+  height: 35px;
+  &focus {
+    box-shadow: 0 0 0 2px #6b7280;
+  }
 `;
 
 export default ContactsListWrapper;

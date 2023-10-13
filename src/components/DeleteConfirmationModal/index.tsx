@@ -137,7 +137,9 @@ const DeleteConfirmationModal = ({
   return (
     <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
       <AlertDialog.Trigger asChild>
-        <button className="Button violet">{children}</button>
+        <button className="Button violet" aria-label="Open New Contact Modal">
+          {children}
+        </button>
       </AlertDialog.Trigger>
       <AlertDialog.Portal>
         <Overlay />
