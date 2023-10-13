@@ -9,6 +9,9 @@ import {
   deleteConfirmationModalVisible,
 } from "@/services/contact/atom";
 import useDeleteContactMutation from "@/services/contact/hooks/useDeleteContactMutation";
+import useManageSavedContacts from "@/services/contact/hooks/useManageSavedContacts";
+import { Contact } from "@/services/contact/types";
+import { toast } from "react-hot-toast";
 
 const contentShowKeyframes = keyframes`
 from {
@@ -99,13 +102,16 @@ const DeleteConfirmationModal = ({
   children,
   open,
   onOpenChange,
+  onSuccess,
 }: {
   onOpenChange: (open: boolean) => void;
   open: boolean;
   children?: React.ReactNode;
+  onSuccess: (contact: Contact) => void;
 }) => {
   const [contact] = useAtom(deleteConfirmationModalData);
   const setModalOpen = useSetAtom(deleteConfirmationModalVisible);
+  const { removeSavedContact } = useManageSavedContacts();
 
   const contactNameCopy =
     !!contact.firstName || !!contact.lastName
@@ -115,13 +121,15 @@ const DeleteConfirmationModal = ({
   const { deleteContact, loading } = useDeleteContactMutation({
     onCompleted: () => {
       setModalOpen(false);
+      onSuccess(contact);
+      toast.success("Contact Deleted");
     },
   });
 
-  const handleDeleteContact = async () => {
+  const handleDeleteContact = async (deleteTarget: Contact) => {
     await deleteContact({
       variables: {
-        id: contact.id,
+        id: deleteTarget.id,
       },
     });
   };
@@ -147,7 +155,7 @@ const DeleteConfirmationModal = ({
             <button
               css={confirmDeleteButtonStyle}
               disabled={loading}
-              onClick={handleDeleteContact}
+              onClick={() => handleDeleteContact(contact)}
             >
               {loading ? "Loading.." : "Yes, delete contact"}
             </button>

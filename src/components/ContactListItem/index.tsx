@@ -32,11 +32,7 @@ const ContactListItem = ({
 
   const openDeleteModal = () => {
     setDeleteModalOpen(true);
-    setDeleteModalData({
-      id: contact.id,
-      firstName: contact.firstName,
-      lastName: contact.lastName,
-    });
+    setDeleteModalData(contact);
   };
 
   return (

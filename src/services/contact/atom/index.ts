@@ -1,14 +1,13 @@
 import { atom } from "jotai";
+import { Contact } from "../types";
 
 export const deleteConfirmationModalVisible = atom<boolean>(false);
-export const deleteConfirmationModalData = atom<{
-  id: number | null;
-  firstName: string;
-  lastName: string;
-}>({
-  id: null,
+export const deleteConfirmationModalData = atom<Contact>({
+  createdAt: "",
   firstName: "",
-  lastName: "",
+  id: 0,
+  lastName: "string",
+  phones: [],
 });
 
 export const createContactModalVisible = atom<boolean>(false);

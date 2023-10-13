@@ -48,6 +48,7 @@ const ContactsListWrapper = ({
       <DeleteConfirmationModal
         open={deleteModalAtom}
         onOpenChange={setDeleteModalAtom}
+        onSuccess={removeFromFavorite}
       ></DeleteConfirmationModal>
       <div css={contactsListWrapperStyle}>
         <div css={contactListSectionStyle}>
