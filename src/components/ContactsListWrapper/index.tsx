@@ -8,6 +8,7 @@ import AddContactModal from "../AddContactModal";
 import { useAtom } from "jotai";
 import {
   deleteConfirmationModalVisible,
+  searchFieldAtom,
   searchQueryAtom,
 } from "@/services/contact/atom";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
@@ -18,9 +19,11 @@ import { CONTACT_LIST_QUERY_LIMIT } from "@/utils/contants";
 import useGetContactList from "@/services/contact/hooks/useGetContactList";
 import { debounce } from "@/utils/helper";
 import useGetContactAggregate from "@/services/contact/hooks/useGetContactAggregate";
+import SearchBar from "../SearchBar";
 
 const ContactsListWrapper = () => {
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
+  const [searchField, setSearchField] = useAtom(searchFieldAtom);
   const [deleteModalAtom, setDeleteModalAtom] = useAtom(
     deleteConfirmationModalVisible
   );
@@ -51,9 +54,6 @@ const ContactsListWrapper = () => {
           },
         },
       }),
-    },
-    options: {
-      notifyOnNetworkStatusChange: true,
     },
   });
 
@@ -93,14 +93,7 @@ const ContactsListWrapper = () => {
         onSuccess={removeFromFavorite}
       ></DeleteConfirmationModal>
       <div css={contactsListWrapperStyle}>
-        <div>
-          <input
-            type="text"
-            css={input}
-            placeholder="Type to search contact"
-            onChange={handleSearchContact}
-          />
-        </div>
+        <SearchBar handleSearchContact={handleSearchContact} />
         <div css={contactListSectionStyle}>
           <h1 css={headingStyle}>Favorites</h1>
           <ConditionalRender condition={savedContacts.length === 0}>
@@ -269,24 +262,6 @@ const favoritesEmptyState = css`
   border-radius: 8px;
   width: 100%;
   height: 80%;
-`;
-
-const input = css`
-  width: 100%;
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  padding: 0 10px;
-  font-size: 15px;
-  line-height: 1;
-  color: #334155;
-  box-shadow: 0 0 0 1px #9ca3af;
-  height: 35px;
-  &focus {
-    box-shadow: 0 0 0 2px #6b7280;
-  }
 `;
 
 export default ContactsListWrapper;

@@ -17,3 +17,6 @@ export const createContactModalVisible = atom<boolean>(false);
  */
 
 export const searchQueryAtom = atom<string>("");
+
+export type SearchFields = "first_name" | "last_name" | "number";
+export const searchFieldAtom = atom<SearchFields>("first_name");
