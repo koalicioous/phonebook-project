@@ -4,11 +4,13 @@ import { Contact } from "@/services/contact/types";
 import { css } from "@emotion/react";
 import ConditionalRender from "../ConditionalRender";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import {
   deleteConfirmationModalData,
   deleteConfirmationModalVisible,
+  searchQueryAtom,
 } from "@/services/contact/atom";
+import HighlightMatch from "../HighlightMatch";
 
 type ContactListItemProps = {
   contact: Contact;
@@ -25,6 +27,7 @@ const ContactListItem = ({
   onFavoriteButtonClicked,
   favorite,
 }: ContactListItemProps) => {
+  const [searchQuery] = useAtom(searchQueryAtom);
   const { firstName, lastName, phones } = contact;
   const hasPhoneNumber = phones?.length > 0;
   const setDeleteModalOpen = useSetAtom(deleteConfirmationModalVisible);
@@ -40,10 +43,10 @@ const ContactListItem = ({
       <div>
         <div css={nameWrapperStyle}>
           <ConditionalRender condition={!!firstName}>
-            <span>{firstName}</span>
+            <HighlightMatch match={searchQuery}>{firstName}</HighlightMatch>
           </ConditionalRender>
           <ConditionalRender condition={!!lastName}>
-            <span>{lastName}</span>
+            <HighlightMatch match={searchQuery}>{lastName}</HighlightMatch>
           </ConditionalRender>
           <ConditionalRender condition={!firstName && !lastName}>
             <ContactNameFallback text="name" />
@@ -56,11 +59,11 @@ const ContactListItem = ({
               fallback={<ContactNameFallback text="phone number" />}
             >
               {hasPhoneNumber && (
-                <span>
+                <HighlightMatch match={searchQuery}>
                   {phones?.[0].number.length > 17
                     ? `${phones?.[0].number.substring(0, 17)}...`
-                    : phones?.[0].number}
-                </span>
+                    : String(phones?.[0].number)}
+                </HighlightMatch>
               )}
             </ConditionalRender>
             <ConditionalRender condition={phones?.length > 1}>

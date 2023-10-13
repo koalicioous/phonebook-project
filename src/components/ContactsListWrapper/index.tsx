@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 
 import { Contact } from "@/services/contact/types";
-import { css } from "@emotion/react";
+import { css, keyframes } from "@emotion/react";
 import ContactListItem from "../ContactListItem";
 import ConditionalRender from "../ConditionalRender";
 import AddContactModal from "../AddContactModal";
@@ -45,19 +45,38 @@ const ContactsListWrapper = () => {
       ],
       offset: 0,
       limit: CONTACT_LIST_QUERY_LIMIT,
-      ...(savedContactIds.length > 0 && {
-        where: {
-          _not: {
-            id: {
-              _in: savedContactIds,
+      ...(savedContactIds.length > 0 &&
+        !searchQuery && {
+          where: {
+            _not: {
+              id: {
+                _in: savedContactIds,
+              },
             },
           },
+        }),
+      ...(!!searchQuery && {
+        where: {
+          ...(searchField === "number"
+            ? {
+                phones: {
+                  number: {
+                    _ilike: `%${searchQuery}%`,
+                  },
+                },
+              }
+            : {
+                [searchField]: {
+                  _ilike: `%${searchQuery}%`,
+                },
+              }),
         },
       }),
     },
   });
 
-  const hasNextPage = count > contacts.length + savedContactIds.length;
+  const hasNextPage =
+    !searchQuery && count > contacts.length + savedContactIds.length;
 
   const loadMoreData = (newOffset: number) => {
     fetchMore({
@@ -78,11 +97,14 @@ const ContactsListWrapper = () => {
     saveContactToFavorite(contact);
     setTimeout(() => {
       refetch();
-    }, 100);
+    }, 200);
   };
 
   const handleSearchContact = debounce((e: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
+    setTimeout(() => {
+      refetch();
+    }, 100);
   }, 500);
 
   return (
@@ -94,53 +116,63 @@ const ContactsListWrapper = () => {
       ></DeleteConfirmationModal>
       <div css={contactsListWrapperStyle}>
         <SearchBar handleSearchContact={handleSearchContact} />
-        <div css={contactListSectionStyle}>
-          <h1 css={headingStyle}>Favorites</h1>
-          <ConditionalRender condition={savedContacts.length === 0}>
-            <div css={favoritesEmptyState}>
-              You have not added any favorites yet
-            </div>
-          </ConditionalRender>
-          <ConditionalRender condition={savedContacts.length > 0}>
-            <div css={scrollableListStyle}>
-              {savedContacts.map((contact) => {
-                return (
-                  <ContactListItem
-                    key={contact.id}
-                    contact={contact}
-                    onFavoriteButtonClicked={removeFromFavorite}
-                    favorite={true}
-                  />
-                );
-              })}
-            </div>
-          </ConditionalRender>
-        </div>
+        <ConditionalRender condition={!searchQuery}>
+          <div css={contactListSectionStyle}>
+            <h1 css={headingStyle}>Favorites</h1>
+            <ConditionalRender condition={savedContacts.length === 0}>
+              <div css={favoritesEmptyState}>
+                You have not added any favorites yet
+              </div>
+            </ConditionalRender>
+            <ConditionalRender condition={savedContacts.length > 0}>
+              <div css={scrollableListStyle}>
+                {savedContacts.map((contact) => {
+                  return (
+                    <ContactListItem
+                      key={contact.id}
+                      contact={contact}
+                      onFavoriteButtonClicked={removeFromFavorite}
+                      favorite={true}
+                    />
+                  );
+                })}
+              </div>
+            </ConditionalRender>
+          </div>
+        </ConditionalRender>
         <div css={contactListSectionStyle}>
           <div css={headingWrapperStyle}>
-            <h1 css={headingStyle}>Contacts List</h1>
-            <AddContactModal>
-              <button css={addButtonStyle}>+ Add Contact</button>
-            </AddContactModal>
+            <h1 css={headingStyle}>
+              {!searchQuery ? "Contacts List" : "Search Result"}
+            </h1>
+            <ConditionalRender condition={!searchQuery}>
+              <AddContactModal>
+                <button css={addButtonStyle}>+ Add Contact</button>
+              </AddContactModal>
+            </ConditionalRender>
           </div>
           <div css={scrollableListStyle}>
             {contacts
               .filter((item) => {
+                return true;
                 // TODO: Remove filter logic from here
                 return !savedContactIds.includes(item.id);
               })
               .map((contact) => {
+                const saved = savedContactIds.includes(contact.id);
                 return (
                   <ContactListItem
                     key={contact.id}
                     contact={contact}
-                    onFavoriteButtonClicked={saveToFavorite}
-                    favorite={false}
+                    onFavoriteButtonClicked={
+                      saved ? removeFromFavorite : saveToFavorite
+                    }
+                    favorite={saved ? true : false}
                   />
                 );
               })}
             {loading && <LoadingAnimation />}
-            {!hasNextPage && contacts.length > 0 && (
+            {!hasNextPage && !loading && !searchQuery && (
               <div
                 css={{
                   padding: "8px 16px",
@@ -154,7 +186,25 @@ const ContactsListWrapper = () => {
                   marginTop: "8px",
                 }}
               >
-                You have reached the end of list
+                {contacts.length > 0 && "You have reached the end of list"}
+                {count === savedContactIds.length && "No More Contacts"}
+              </div>
+            )}
+            {!!searchQuery && contacts.length === 0 && (
+              <div
+                css={{
+                  padding: "8px 16px",
+                  width: "100%",
+                  text: "12px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#f1f5f9",
+                  color: "#0f172a",
+                  marginTop: "8px",
+                }}
+              >
+                No result found
               </div>
             )}
             {hasNextPage && (
@@ -213,6 +263,18 @@ const headingStyle = css`
   }
 `;
 
+const fadeInOut = keyframes`
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  to {
+    max-height: 50vh; /* Adjust max-height as needed */
+    opacity: 1;
+  }
+`;
+
 const addButtonStyle = css`
   border: 1px solid #e0e0e0;
   padding: 8px 12px;
@@ -220,6 +282,7 @@ const addButtonStyle = css`
   cursor: pointer;
   font-size: 12px;
   font-weight: 600;
+  animation: ${fadeInOut} 0.3s ease;
   &:hover {
     background-color: #e0e0e0;
   }
@@ -228,6 +291,7 @@ const addButtonStyle = css`
 const contactListSectionStyle = css`
   height: 100%;
   max-height: calc(50vh - 40px);
+  animation: ${fadeInOut} 0.3s ease;
   @media (min-width: 600px) {
     max-height: calc(45vh - 40px);
   }
