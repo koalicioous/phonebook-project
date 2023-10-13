@@ -1,0 +1,1 @@
+export const CONTACT_LIST_QUERY_LIMIT = 10;

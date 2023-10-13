@@ -8,19 +8,26 @@ import AddContactModal from "../AddContactModal";
 import { useAtom } from "jotai";
 import { deleteConfirmationModalVisible } from "@/services/contact/atom";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
+import LoadingAnimation from "../Spinner";
+import useContactPagination from "@/services/contact/hooks/useContactPagination";
 
 type ContactListWrapperProps = {
   favorites: Contact[];
   contacts: Contact[];
+  loading: boolean;
+  fetchMore: (newOffset: number) => void;
 };
 
 const ContactsListWrapper = ({
   favorites,
   contacts,
+  loading,
+  fetchMore,
 }: ContactListWrapperProps) => {
   const [deleteModalAtom, setDeleteModalAtom] = useAtom(
     deleteConfirmationModalVisible
   );
+  const { nextPageAvailable } = useContactPagination();
 
   return (
     <>
@@ -48,9 +55,34 @@ const ContactsListWrapper = ({
             {contacts.map((contact) => {
               return <ContactListItem key={contact.id} contact={contact} />;
             })}
-            <button css={loadMoreButtonStyle} onClick={() => {}}>
-              Load More
-            </button>
+            {loading && <LoadingAnimation />}
+            {!nextPageAvailable && contacts.length > 0 && (
+              <div
+                css={{
+                  padding: "8px 16px",
+                  width: "100%",
+                  text: "12px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#f1f5f9",
+                  color: "#64748b",
+                  marginTop: "8px",
+                }}
+              >
+                You have reached the end of list
+              </div>
+            )}
+            {nextPageAvailable && (
+              <button
+                css={loadMoreButtonStyle}
+                onClick={() => {
+                  fetchMore(contacts.length);
+                }}
+              >
+                Load More
+              </button>
+            )}
           </div>
         </div>
       </div>

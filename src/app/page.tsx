@@ -4,6 +4,8 @@ import { css } from "@emotion/react";
 import ContactsListWrapper from "@/components/ContactsListWrapper";
 import useGetContactList from "@/services/contact/hooks/useGetContactList";
 import { Toaster } from "react-hot-toast";
+import useContactPagination from "@/services/contact/hooks/useContactPagination";
+import { CONTACT_LIST_QUERY_LIMIT } from "@/utils/contants";
 
 const containerStyle = css`
   display: flex;
@@ -14,20 +16,43 @@ const containerStyle = css`
 `;
 
 export default function Home() {
-  const { contacts } = useGetContactList({
+  const { updateTotalData } = useContactPagination(CONTACT_LIST_QUERY_LIMIT);
+  const { contacts, loading, fetchMore } = useGetContactList({
     variables: {
       order_by: [
         {
           created_at: "desc",
         },
       ],
+      offset: 0,
+      limit: CONTACT_LIST_QUERY_LIMIT,
+    },
+    options: {
+      onCompleted: (data) => {
+        updateTotalData(data.contact.length);
+      },
+      notifyOnNetworkStatusChange: true,
     },
   });
+  console.log(contacts.length);
+
+  const loadMoreData = (newOffset: number) => {
+    fetchMore({
+      variables: {
+        offset: newOffset,
+      },
+    });
+  };
 
   return (
     <main css={containerStyle}>
       <Toaster />
-      <ContactsListWrapper favorites={[]} contacts={contacts} />
+      <ContactsListWrapper
+        favorites={[]}
+        contacts={contacts}
+        loading={loading}
+        fetchMore={loadMoreData}
+      />
     </main>
   );
 }
