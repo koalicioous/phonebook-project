@@ -1,11 +1,18 @@
 /** @jsxImportSource @emotion/react */
 "use client";
+import dynamic from "next/dynamic";
 import { css } from "@emotion/react";
-import ContactsListWrapper from "@/components/ContactsListWrapper";
 import useGetContactList from "@/services/contact/hooks/useGetContactList";
 import { Toaster } from "react-hot-toast";
 import useContactPagination from "@/services/contact/hooks/useContactPagination";
 import { CONTACT_LIST_QUERY_LIMIT } from "@/utils/contants";
+
+const ContactsListWrapper = dynamic(
+  () => import("@/components/ContactsListWrapper"),
+  {
+    ssr: false,
+  }
+);
 
 const containerStyle = css`
   display: flex;
@@ -47,7 +54,6 @@ export default function Home() {
     <main css={containerStyle}>
       <Toaster />
       <ContactsListWrapper
-        favorites={[]}
         contacts={contacts}
         loading={loading}
         fetchMore={loadMoreData}

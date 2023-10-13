@@ -4,9 +4,7 @@ import { Contact } from "@/services/contact/types";
 import { css } from "@emotion/react";
 import ConditionalRender from "../ConditionalRender";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import DeleteConfirmationModal from "../DeleteConfirmationModal";
-import { useState } from "react";
-import { useAtom, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import {
   deleteConfirmationModalData,
   deleteConfirmationModalVisible,
@@ -14,13 +12,19 @@ import {
 
 type ContactListItemProps = {
   contact: Contact;
+  onFavoriteButtonClicked: (contact: Contact) => void;
+  favorite: boolean;
 };
 
 const ContactNameFallback = ({ text }: { text: string }) => {
   return <span css={contactFallbackTextStyle}>{`Contact has no ${text}`}</span>;
 };
 
-const ContactListItem = ({ contact }: ContactListItemProps) => {
+const ContactListItem = ({
+  contact,
+  onFavoriteButtonClicked,
+  favorite,
+}: ContactListItemProps) => {
   const { firstName, lastName, phones } = contact;
   const hasPhoneNumber = phones?.length > 0;
   const setDeleteModalOpen = useSetAtom(deleteConfirmationModalVisible);
@@ -77,7 +81,15 @@ const ContactListItem = ({ contact }: ContactListItemProps) => {
           alignItems: "center",
         }}
       >
-        <button css={favoriteButton}>☆</button>
+        <button
+          type="button"
+          onClick={() => {
+            onFavoriteButtonClicked(contact);
+          }}
+          css={favoriteButton(favorite)}
+        >
+          {favorite ? "★" : "☆"}
+        </button>
         <DropdownMenu.Root>
           <DropdownMenu.Trigger css={actionTriggerButton}>
             ≡
@@ -172,10 +184,11 @@ const actionContentItemStyle = css`
   }
 `;
 
-const favoriteButton = css`
+const favoriteButton = (favorite: boolean) => css`
   border-radius: 8px;
   width: 40px;
   height: 40px;
+  color: ${favorite ? "#eab308" : "#52525b"};
   &:hover {
     background-color: #e5e7eb;
   }

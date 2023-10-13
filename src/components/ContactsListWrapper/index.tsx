@@ -10,16 +10,16 @@ import { deleteConfirmationModalVisible } from "@/services/contact/atom";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import LoadingAnimation from "../Spinner";
 import useContactPagination from "@/services/contact/hooks/useContactPagination";
+import useManageSavedContacts from "@/services/contact/hooks/useManageSavedContacts";
+import { useMemo } from "react";
 
 type ContactListWrapperProps = {
-  favorites: Contact[];
   contacts: Contact[];
   loading: boolean;
   fetchMore: (newOffset: number) => void;
 };
 
 const ContactsListWrapper = ({
-  favorites,
   contacts,
   loading,
   fetchMore,
@@ -28,6 +28,20 @@ const ContactsListWrapper = ({
     deleteConfirmationModalVisible
   );
   const { nextPageAvailable } = useContactPagination();
+  const { saveContactToFavorite, savedContacts, removeSavedContact } =
+    useManageSavedContacts();
+
+  const removeFromFavorite = (contact: Contact) => {
+    removeSavedContact(contact);
+  };
+
+  const saveToFavorite = (contact: Contact) => {
+    saveContactToFavorite(contact);
+  };
+
+  const savedContactIds = useMemo(() => {
+    return savedContacts.map((item) => item.id);
+  }, [savedContacts]);
 
   return (
     <>
@@ -38,9 +52,23 @@ const ContactsListWrapper = ({
       <div css={contactsListWrapperStyle}>
         <div css={contactListSectionStyle}>
           <h1 css={headingStyle}>Favorites</h1>
-          <ConditionalRender condition={favorites.length === 0}>
+          <ConditionalRender condition={savedContacts.length === 0}>
             <div css={favoritesEmptyState}>
               You have not added any favorites yet
+            </div>
+          </ConditionalRender>
+          <ConditionalRender condition={savedContacts.length > 0}>
+            <div css={scrollableListStyle}>
+              {savedContacts.map((contact) => {
+                return (
+                  <ContactListItem
+                    key={contact.id}
+                    contact={contact}
+                    onFavoriteButtonClicked={removeFromFavorite}
+                    favorite={true}
+                  />
+                );
+              })}
             </div>
           </ConditionalRender>
         </div>
@@ -52,9 +80,20 @@ const ContactsListWrapper = ({
             </AddContactModal>
           </div>
           <div css={scrollableListStyle}>
-            {contacts.map((contact) => {
-              return <ContactListItem key={contact.id} contact={contact} />;
-            })}
+            {contacts
+              .filter((item) => {
+                return !savedContactIds.includes(item.id);
+              })
+              .map((contact) => {
+                return (
+                  <ContactListItem
+                    key={contact.id}
+                    contact={contact}
+                    onFavoriteButtonClicked={saveToFavorite}
+                    favorite={false}
+                  />
+                );
+              })}
             {loading && <LoadingAnimation />}
             {!nextPageAvailable && contacts.length > 0 && (
               <div
