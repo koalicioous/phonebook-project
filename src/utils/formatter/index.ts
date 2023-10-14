@@ -12,6 +12,7 @@ export const formatRawContact = (rawContacts?: RawContact[]): Contact[] => {
       lastName: rawContact.last_name,
       phones: rawContact.phones.map((rawPhone) => {
         return {
+          id: rawPhone.id,
           number: rawPhone.number,
         };
       }),

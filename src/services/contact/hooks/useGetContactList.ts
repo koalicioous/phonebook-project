@@ -19,6 +19,7 @@ const useGetContactList = ({
     },
     ContactListQueryVariables
   >(GET_CONTACT_LIST, {
+    skip: Object.keys(variables).length === 0,
     variables,
     ...options,
   });

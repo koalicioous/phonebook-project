@@ -20,6 +20,7 @@ export const GET_CONTACT_LIST = gql`
       id
       last_name
       phones {
+        id
         number
       }
     }

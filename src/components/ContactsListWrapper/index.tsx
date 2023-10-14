@@ -20,6 +20,7 @@ import useGetContactList from "@/services/contact/hooks/useGetContactList";
 import { debounce } from "@/utils/helper";
 import useGetContactAggregate from "@/services/contact/hooks/useGetContactAggregate";
 import SearchBar from "../SearchBar";
+import EditContactModal from "../EditContactModal";
 
 const ContactsListWrapper = () => {
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
@@ -114,6 +115,7 @@ const ContactsListWrapper = () => {
         onOpenChange={setDeleteModalAtom}
         onSuccess={removeFromFavorite}
       ></DeleteConfirmationModal>
+      <EditContactModal />
       <div css={contactsListWrapperStyle}>
         <SearchBar handleSearchContact={handleSearchContact} />
         <ConditionalRender condition={!searchQuery}>

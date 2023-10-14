@@ -8,6 +8,8 @@ import { useAtom, useSetAtom } from "jotai";
 import {
   deleteConfirmationModalData,
   deleteConfirmationModalVisible,
+  editContactModalDataAtom,
+  editContactModalVisible,
   searchQueryAtom,
 } from "@/services/contact/atom";
 import HighlightMatch from "../HighlightMatch";
@@ -28,6 +30,8 @@ const ContactListItem = ({
   favorite,
 }: ContactListItemProps) => {
   const [searchQuery] = useAtom(searchQueryAtom);
+  const setEditContactModalData = useSetAtom(editContactModalDataAtom);
+  const setEditContactModalVisible = useSetAtom(editContactModalVisible);
   const { firstName, lastName, phones } = contact;
   const hasPhoneNumber = phones?.length > 0;
   const setDeleteModalOpen = useSetAtom(deleteConfirmationModalVisible);
@@ -36,6 +40,11 @@ const ContactListItem = ({
   const openDeleteModal = () => {
     setDeleteModalOpen(true);
     setDeleteModalData(contact);
+  };
+
+  const handleOpenEditModalVisible = () => {
+    setEditContactModalData(contact);
+    setEditContactModalVisible(true);
   };
 
   return (
@@ -100,7 +109,10 @@ const ContactListItem = ({
             <DropdownMenu.Item css={actionContentItemStyle} onSelect={() => {}}>
               View Detail
             </DropdownMenu.Item>
-            <DropdownMenu.Item css={actionContentItemStyle} onSelect={() => {}}>
+            <DropdownMenu.Item
+              css={actionContentItemStyle}
+              onSelect={handleOpenEditModalVisible}
+            >
               Edit
             </DropdownMenu.Item>
             <DropdownMenu.Item

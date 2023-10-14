@@ -11,6 +11,16 @@ export const deleteConfirmationModalData = atom<Contact>({
 });
 
 export const createContactModalVisible = atom<boolean>(false);
+export const editContactModalVisible = atom<boolean>(false);
+export const addPhoneToContactModalVisible = atom<boolean>(false);
+
+export type EditContactModalData = Contact & {
+  createdAt: string;
+  id: number;
+};
+export const editContactModalDataAtom = atom<EditContactModalData>(
+  {} as EditContactModalData
+);
 
 /**
  * Contact Filter & Pagination Atom

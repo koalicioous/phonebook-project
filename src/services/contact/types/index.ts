@@ -19,10 +19,12 @@ export type Contact = {
 
 export type RawPhone = {
   __typename: string;
+  id: number;
   number: string;
 };
 
 export type Phone = {
+  id?: number;
   number: string;
 };
 

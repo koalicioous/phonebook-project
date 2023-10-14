@@ -1,3 +1,4 @@
+import { Contact } from "@/services/contact/types";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 const client = new ApolloClient({
@@ -8,8 +9,16 @@ const client = new ApolloClient({
         fields: {
           contact: {
             keyArgs: false,
-            merge(existing = [], incoming) {
-              return [...existing, ...incoming];
+            merge(existing: Contact[] = [], incoming: Contact[]) {
+              const uniqueContactIds = new Set(
+                existing.map((contact) => contact.id)
+              );
+
+              const filteredIncoming = incoming.filter(
+                (contact) => !uniqueContactIds.has(contact.id)
+              );
+
+              return [...existing, ...filteredIncoming];
             },
           },
         },
