@@ -4,12 +4,13 @@ import { Contact } from "@/services/contact/types";
 import { css } from "@emotion/react";
 import ConditionalRender from "../ConditionalRender";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   deleteConfirmationModalData,
   deleteConfirmationModalVisible,
   editContactModalDataAtom,
   editContactModalVisible,
+  searchFieldAtom,
   searchQueryAtom,
 } from "@/services/contact/atom";
 import HighlightMatch from "../HighlightMatch";
@@ -30,6 +31,7 @@ const ContactListItem = ({
   favorite,
 }: ContactListItemProps) => {
   const [searchQuery] = useAtom(searchQueryAtom);
+  const searchField = useAtomValue(searchFieldAtom);
   const setEditContactModalData = useSetAtom(editContactModalDataAtom);
   const setEditContactModalVisible = useSetAtom(editContactModalVisible);
   const { firstName, lastName, phones } = contact;
@@ -67,13 +69,31 @@ const ContactListItem = ({
               condition={!!hasPhoneNumber}
               fallback={<ContactNameFallback text="phone number" />}
             >
-              {hasPhoneNumber && (
-                <HighlightMatch match={searchQuery}>
-                  {phones?.[0].number.length > 17
-                    ? `${phones?.[0].number.substring(0, 17)}...`
-                    : String(phones?.[0].number)}
-                </HighlightMatch>
-              )}
+              <ConditionalRender
+                condition={!!searchQuery && searchField === "number"}
+                fallback={
+                  <HighlightMatch match={searchQuery}>
+                    {phones?.[0].number.length > 17
+                      ? `${phones?.[0].number.substring(0, 17)}...`
+                      : String(phones?.[0].number)}
+                  </HighlightMatch>
+                }
+              >
+                {phones
+                  .filter((item) => {
+                    return item.number.includes(searchQuery);
+                  })
+                  .map((item, index) => {
+                    if (index > 0) return null;
+                    return (
+                      <HighlightMatch match={searchQuery} key={item.id}>
+                        {item.number.length > 17
+                          ? `${item.number.substring(0, 17)}...`
+                          : String(item.number)}
+                      </HighlightMatch>
+                    );
+                  })}
+              </ConditionalRender>
             </ConditionalRender>
             <ConditionalRender condition={phones?.length > 1}>
               <span css={hasMorePhoneBadgeStyle}>{`+${
@@ -129,9 +149,15 @@ const ContactListItem = ({
 };
 
 const nameWrapperStyle = css`
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 4px;
+  @media (min-width: 768px) {
+    max-width: 600px;
+  }
 `;
 
 const contactListItemStyle = css`
