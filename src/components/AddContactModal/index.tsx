@@ -17,13 +17,16 @@ import { createContactModalVisible } from "@/services/contact/atom";
 import { toast } from "react-hot-toast";
 import { ContactInput } from "@/services/contact/types";
 import { ApolloError } from "@apollo/client";
+import useGetContactAggregate from "@/services/contact/hooks/useGetContactAggregate";
 
 const AddContactModal = ({ children }: { children: React.ReactNode }) => {
+  const { refetch: refetchCount } = useGetContactAggregate();
   const [createModalVisible, setCreateModalVisible] = useAtom(
     createContactModalVisible
   );
   const { createContact, loading } = useCreateContactMutation({
     onCompleted: () => {
+      refetchCount();
       reset();
       setCreateModalVisible(false);
     },

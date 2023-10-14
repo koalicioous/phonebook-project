@@ -31,7 +31,7 @@ const ContactsListWrapper = () => {
 
   const { saveContactToFavorite, savedContacts, removeSavedContact } =
     useManageSavedContacts();
-  const { count } = useGetContactAggregate();
+  const { count, refetch: refetchCount } = useGetContactAggregate();
 
   const savedContactIds = useMemo(() => {
     return savedContacts.map((item) => item.id);
@@ -88,6 +88,7 @@ const ContactsListWrapper = () => {
   };
 
   const removeFromFavorite = (contact: Contact) => {
+    refetchCount();
     removeSavedContact(contact);
     setTimeout(() => {
       refetch();

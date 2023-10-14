@@ -66,6 +66,7 @@ const AddPhoneToContactModal = ({
           const errorMessage = err.message;
           reject(errorMessage);
         } else {
+          console.log(err);
           reject("Failed to add number");
         }
       }
@@ -96,7 +97,7 @@ const AddPhoneToContactModal = ({
                 <input
                   css={input}
                   id="number"
-                  placeholder="First Name"
+                  placeholder="New Number"
                   {...register("number", {
                     required: "Number is required",
                     validate: {

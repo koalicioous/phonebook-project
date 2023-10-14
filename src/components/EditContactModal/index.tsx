@@ -20,10 +20,12 @@ import {
 } from "@/services/contact/atom";
 import { toast } from "react-hot-toast";
 import { ContactInput } from "@/services/contact/types";
-import { ApolloError } from "@apollo/client";
+import { ApolloError, gql } from "@apollo/client";
 import { useEffect } from "react";
 import AddPhoneToContactModal from "../AddPhoneToContactModal";
 import useUpdatePhoneNumber from "@/services/contact/hooks/useUpdatePhoneNumber";
+import { cache } from "@/lib/ApolloClient";
+import { contactToRawFormat } from "@/utils/formatter";
 
 type EditContactInput = Omit<ContactInput, "numbers"> & {
   numbers: {
@@ -89,6 +91,28 @@ const EditContactModal = () => {
   }, [editContactVisible, contactData, setValue, reset]);
 
   const handleNewNumberAdded = (id: number, number: string) => {
+    const contactCacheId = cache.identify(contactToRawFormat(contactData));
+    cache.modify({
+      id: contactCacheId,
+      fields: {
+        phones(existingPhones = []) {
+          const newPhoneRef = cache.writeFragment({
+            data: {
+              __typename: "phone",
+              id,
+              number,
+            },
+            fragment: gql`
+              fragment NewPhone on Query {
+                id
+                number
+              }
+            `,
+          });
+          return [...existingPhones, newPhoneRef];
+        },
+      },
+    });
     setContactData((prev) => {
       return {
         ...prev,

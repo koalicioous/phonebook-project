@@ -27,4 +27,6 @@ const client = new ApolloClient({
   }),
 });
 
+export const cache = client.cache;
+
 export default client;

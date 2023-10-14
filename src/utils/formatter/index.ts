@@ -19,3 +19,20 @@ export const formatRawContact = (rawContacts?: RawContact[]): Contact[] => {
     };
   });
 };
+
+export const contactToRawFormat = (contact: Contact): RawContact => {
+  return {
+    __typename: "contact",
+    created_at: contact.createdAt,
+    first_name: contact.firstName,
+    id: contact.id,
+    last_name: contact.lastName,
+    phones: contact.phones.map((phone) => {
+      return {
+        __typename: "number",
+        id: phone.id ?? 0,
+        number: phone.number,
+      };
+    }),
+  };
+};
