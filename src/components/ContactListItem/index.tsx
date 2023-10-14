@@ -123,8 +123,13 @@ const ContactListItem = ({
             ≡
           </DropdownMenu.Trigger>
           <DropdownMenu.Content css={actionContentStyle} align="end">
-            <DropdownMenu.Item css={actionContentItemStyle} onSelect={() => {}}>
-              Add To Favorite
+            <DropdownMenu.Item
+              css={actionContentItemStyle}
+              onSelect={() => {
+                onFavoriteButtonClicked(contact);
+              }}
+            >
+              {favorite ? "Unfavorite" : "Add to Favorite"}
             </DropdownMenu.Item>
             <DropdownMenu.Item css={actionContentItemStyle} onSelect={() => {}}>
               View Detail
