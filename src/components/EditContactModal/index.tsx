@@ -5,13 +5,8 @@ import { keyframes, css } from "@emotion/react";
 
 import * as Dialog from "@radix-ui/react-dialog";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import {
-  checkSpecialCharacter,
-  checkValidNumber,
-  formatAddContactPayload,
-} from "@/utils/helper";
+import { checkSpecialCharacter, checkValidNumber } from "@/utils/helper";
 import ConditionalRender from "../ConditionalRender";
-import useCreateContactMutation from "@/services/contact/hooks/useCreateContactMutation";
 import { useAtom, useSetAtom } from "jotai";
 import {
   addPhoneToContactModalVisible,
@@ -26,6 +21,7 @@ import AddPhoneToContactModal from "../AddPhoneToContactModal";
 import useUpdatePhoneNumber from "@/services/contact/hooks/useUpdatePhoneNumber";
 import { cache } from "@/lib/ApolloClient";
 import { contactToRawFormat } from "@/utils/formatter";
+import useUpdateContactMutation from "@/services/contact/hooks/useUpdateContactMutation";
 
 type EditContactInput = Omit<ContactInput, "numbers"> & {
   numbers: {
@@ -41,12 +37,13 @@ const EditContactModal = () => {
   const setAddNumberModalVisible = useSetAtom(addPhoneToContactModalVisible);
   const [contactData, setContactData] = useAtom(editContactModalDataAtom);
 
-  const { createContact, loading } = useCreateContactMutation({
-    onCompleted: () => {
-      reset();
-      setEditContactModalVisible(false);
-    },
-  });
+  const [updateContactData, { loading: updatingContactData, error }] =
+    useUpdateContactMutation({
+      onCompleted: () => {
+        reset();
+        setEditContactModalVisible(false);
+      },
+    });
 
   const [updatePhoneNumber, { loading: loadingUpdatePhoneNumber }] =
     useUpdatePhoneNumber();
@@ -145,6 +142,18 @@ const EditContactModal = () => {
           },
         });
         if (res) {
+          cache.modify({
+            id: cache.identify({
+              __typename: "phone",
+              id: contactData.phones[index].id,
+              number: contactData.phones[index].number,
+            }),
+            fields: {
+              number() {
+                return newNumber;
+              },
+            },
+          });
           setContactData((prev) => {
             const newPhones = prev.phones.map((item, idx) => {
               if (idx === index) {
@@ -179,27 +188,15 @@ const EditContactModal = () => {
   };
 
   const handleSubmitEditContact = async (data: ContactInput) => {
-    // Logic check if previously existing phone number is edited
-    const updatedNumbers =
-      contactData.phones.length === 0
-        ? []
-        : contactData.phones.map((oldNumber, idx) => {
-            if (oldNumber.number !== data.numbers[idx].value) {
-              return {
-                id: oldNumber.id,
-                number: data.numbers[idx].value,
-              };
-            }
-          });
-    if (updatedNumbers.length > 0) {
-    }
-
-    return;
     const submission = new Promise(async (resolve, reject) => {
       try {
-        const res = await createContact({
+        const res = await updateContactData({
           variables: {
-            ...formatAddContactPayload(data),
+            id: contactData.id,
+            _set: {
+              first_name: data.firstName,
+              last_name: data.lastName,
+            },
           },
         });
         resolve(res);
@@ -372,8 +369,12 @@ const EditContactModal = () => {
                 justifyContent: "flex-end",
               }}
             >
-              <button type="submit" css={saveButton} disabled={loading}>
-                {loading ? "Loading..." : "Update Contact"}
+              <button
+                type="submit"
+                css={saveButton}
+                disabled={updatingContactData}
+              >
+                {updatingContactData ? "Loading..." : "Update Contact"}
               </button>
             </div>
           </form>

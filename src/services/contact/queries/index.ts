@@ -19,7 +19,7 @@ export const GET_CONTACT_LIST = gql`
       first_name
       id
       last_name
-      phones {
+      phones(order_by: { created_ad: desc }) {
         id
         number
       }
@@ -57,7 +57,7 @@ export const GET_PHONE_LIST = gql`
       order_by: $order_by
     ) {
       number
-      contact {
+      contact(order_by: { created_ad: desc }) {
         id
         first_name
         last_name
