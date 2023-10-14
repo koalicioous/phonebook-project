@@ -9,13 +9,20 @@ const client = new ApolloClient({
         fields: {
           contact: {
             keyArgs: false,
-            merge(existing: Contact[] = [], incoming: Contact[]) {
+            merge(
+              existing: {
+                __ref: string;
+              }[] = [],
+              incoming: {
+                __ref: string;
+              }[]
+            ) {
               const uniqueContactIds = new Set(
-                existing.map((contact) => contact.id)
+                existing.map((contact) => contact.__ref)
               );
 
               const filteredIncoming = incoming.filter(
-                (contact) => !uniqueContactIds.has(contact.id)
+                (contact) => !uniqueContactIds.has(contact.__ref)
               );
 
               return [...existing, ...filteredIncoming];

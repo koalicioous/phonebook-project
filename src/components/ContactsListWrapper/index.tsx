@@ -17,7 +17,7 @@ import useManageSavedContacts from "@/services/contact/hooks/useManageSavedConta
 import { ChangeEvent, useMemo } from "react";
 import { CONTACT_LIST_QUERY_LIMIT } from "@/utils/contants";
 import useGetContactList from "@/services/contact/hooks/useGetContactList";
-import { debounce } from "@/utils/helper";
+import { debounce, updateSavedContact } from "@/utils/helper";
 import useGetContactAggregate from "@/services/contact/hooks/useGetContactAggregate";
 import SearchBar from "../SearchBar";
 import EditContactModal from "../EditContactModal";
@@ -29,8 +29,12 @@ const ContactsListWrapper = () => {
     deleteConfirmationModalVisible
   );
 
-  const { saveContactToFavorite, savedContacts, removeSavedContact } =
-    useManageSavedContacts();
+  const {
+    saveContactToFavorite,
+    savedContacts,
+    removeSavedContact,
+    refreshSavedContacts,
+  } = useManageSavedContacts();
   const { count, refetch: refetchCount } = useGetContactAggregate();
 
   const savedContactIds = useMemo(() => {
@@ -109,6 +113,11 @@ const ContactsListWrapper = () => {
     }, 100);
   }, 500);
 
+  const handleUpdateSavedContact = (id: number, contact: Contact) => {
+    updateSavedContact(id, contact);
+    refreshSavedContacts();
+  };
+
   return (
     <>
       <DeleteConfirmationModal
@@ -116,7 +125,7 @@ const ContactsListWrapper = () => {
         onOpenChange={setDeleteModalAtom}
         onSuccess={removeFromFavorite}
       ></DeleteConfirmationModal>
-      <EditContactModal />
+      <EditContactModal handleUpdateSavedContact={handleUpdateSavedContact} />
       <div css={contactsListWrapperStyle}>
         <SearchBar handleSearchContact={handleSearchContact} />
         <ConditionalRender condition={!searchQuery}>

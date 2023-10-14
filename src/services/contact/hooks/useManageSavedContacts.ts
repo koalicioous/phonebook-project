@@ -33,7 +33,14 @@ const useManageSavedContacts = () => {
     setLocalStorageValue(ContactsLocalStorageKeys.FAVORITE_CONTACTS, newValue);
   };
 
+  const refreshSavedContacts = () => {
+    const savedContacts =
+      getLocalStorageValue(ContactsLocalStorageKeys.FAVORITE_CONTACTS) || [];
+    setSavedContacts(savedContacts);
+  };
+
   return {
+    refreshSavedContacts,
     savedContacts,
     saveContactToFavorite,
     removeSavedContact,

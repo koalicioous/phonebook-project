@@ -1,6 +1,11 @@
 import { LocalStorageModel } from "@/services/common/LocalStorage/model";
-import { AddContactPayload, ContactInput } from "@/services/contact/types";
+import {
+  AddContactPayload,
+  Contact,
+  ContactInput,
+} from "@/services/contact/types";
 import LocalStorageService from "@/services/common/LocalStorage";
+import { ContactsLocalStorageKeys } from "@/services/contact/types/enums";
 
 export const checkSpecialCharacter = (value: string) => {
   const invalidCharacters = /^[^~!@#$%^&*()_+|{}“:?><[\]\\;’,.\/=-]+$/;
@@ -29,6 +34,23 @@ export const formatAddContactPayload = (
       number: number.value,
     })),
   };
+};
+
+export const contactIsSaved = (id: number): boolean => {
+  const savedContacts =
+    getLocalStorageValue(ContactsLocalStorageKeys.FAVORITE_CONTACTS) || [];
+  return savedContacts.some((contact) => contact.id === id);
+};
+
+export const updateSavedContact = (id: number, data: Contact): void => {
+  const savedContacts =
+    getLocalStorageValue(ContactsLocalStorageKeys.FAVORITE_CONTACTS) || [];
+  const index = savedContacts.findIndex((contact) => contact.id === id);
+  savedContacts[index] = data;
+  setLocalStorageValue(
+    ContactsLocalStorageKeys.FAVORITE_CONTACTS,
+    savedContacts
+  );
 };
 
 /**

@@ -5,7 +5,11 @@ import { keyframes, css } from "@emotion/react";
 
 import * as Dialog from "@radix-ui/react-dialog";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { checkSpecialCharacter, checkValidNumber } from "@/utils/helper";
+import {
+  checkSpecialCharacter,
+  checkValidNumber,
+  contactIsSaved,
+} from "@/utils/helper";
 import ConditionalRender from "../ConditionalRender";
 import { useAtom, useSetAtom } from "jotai";
 import {
@@ -14,7 +18,7 @@ import {
   editContactModalVisible,
 } from "@/services/contact/atom";
 import { toast } from "react-hot-toast";
-import { ContactInput } from "@/services/contact/types";
+import { Contact, ContactInput } from "@/services/contact/types";
 import { ApolloError, gql } from "@apollo/client";
 import { useEffect } from "react";
 import AddPhoneToContactModal from "../AddPhoneToContactModal";
@@ -30,7 +34,11 @@ type EditContactInput = Omit<ContactInput, "numbers"> & {
   }[];
 };
 
-const EditContactModal = () => {
+const EditContactModal = ({
+  handleUpdateSavedContact,
+}: {
+  handleUpdateSavedContact: (id: number, contact: Contact) => void;
+}) => {
   const [editContactVisible, setEditContactModalVisible] = useAtom(
     editContactModalVisible
   );
@@ -89,6 +97,18 @@ const EditContactModal = () => {
 
   const handleNewNumberAdded = (id: number, number: string) => {
     const contactCacheId = cache.identify(contactToRawFormat(contactData));
+    if (contactIsSaved(contactData.id)) {
+      handleUpdateSavedContact(contactData.id, {
+        ...contactData,
+        phones: [
+          ...contactData.phones,
+          {
+            id,
+            number,
+          },
+        ],
+      });
+    }
     cache.modify({
       id: contactCacheId,
       fields: {
@@ -142,6 +162,20 @@ const EditContactModal = () => {
           },
         });
         if (res) {
+          if (contactIsSaved(contactData.id)) {
+            handleUpdateSavedContact(contactData.id, {
+              ...contactData,
+              phones: contactData.phones.map((item, idx) => {
+                if (item.id === contactData.phones[index].id) {
+                  return {
+                    id: item.id,
+                    number: newNumber,
+                  };
+                }
+                return item;
+              }),
+            });
+          }
           cache.modify({
             id: cache.identify({
               __typename: "phone",
@@ -199,6 +233,15 @@ const EditContactModal = () => {
             },
           },
         });
+        if (res) {
+          if (contactIsSaved(contactData.id)) {
+            handleUpdateSavedContact(contactData.id, {
+              ...contactData,
+              firstName: data.firstName,
+              lastName: data.lastName,
+            });
+          }
+        }
         resolve(res);
       } catch (err) {
         if (err instanceof ApolloError) {
