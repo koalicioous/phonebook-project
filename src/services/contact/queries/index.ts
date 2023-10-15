@@ -35,6 +35,7 @@ export const GET_CONTACT_DETAIL = gql`
       first_name
       last_name
       phones {
+        id
         number
       }
     }

@@ -14,6 +14,7 @@ import {
   searchQueryAtom,
 } from "@/services/contact/atom";
 import HighlightMatch from "../HighlightMatch";
+import Link from "next/link";
 
 type ContactListItemProps = {
   contact: Contact;
@@ -73,9 +74,9 @@ const ContactListItem = ({
                 condition={!!searchQuery && searchField === "number"}
                 fallback={
                   <HighlightMatch match={searchQuery}>
-                    {phones?.[0].number.length > 17
-                      ? `${phones?.[0].number.substring(0, 17)}...`
-                      : String(phones?.[0].number)}
+                    {phones?.[0]?.number?.length > 17
+                      ? `${phones?.[0]?.number?.substring(0, 17)}...`
+                      : String(phones?.[0]?.number)}
                   </HighlightMatch>
                 }
               >
@@ -132,7 +133,16 @@ const ContactListItem = ({
               {favorite ? "Unfavorite" : "Add to Favorite"}
             </DropdownMenu.Item>
             <DropdownMenu.Item css={actionContentItemStyle} onSelect={() => {}}>
-              View Detail
+              <Link
+                href={`/contact/${contact.id}`}
+                css={{
+                  margin: "-8px -12px",
+                  padding: "8px 12px",
+                  paddingRight: "60px",
+                }}
+              >
+                View Detail
+              </Link>
             </DropdownMenu.Item>
             <DropdownMenu.Item
               css={actionContentItemStyle}

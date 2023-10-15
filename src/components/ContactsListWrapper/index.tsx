@@ -21,6 +21,7 @@ import { debounce, updateSavedContact } from "@/utils/helper";
 import useGetContactAggregate from "@/services/contact/hooks/useGetContactAggregate";
 import SearchBar from "../SearchBar";
 import EditContactModal from "../EditContactModal";
+import { contentWrapperStyle } from "@/styles/SharedCSS";
 
 const ContactsListWrapper = () => {
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
@@ -126,7 +127,7 @@ const ContactsListWrapper = () => {
         onSuccess={removeFromFavorite}
       ></DeleteConfirmationModal>
       <EditContactModal handleUpdateSavedContact={handleUpdateSavedContact} />
-      <div css={contactsListWrapperStyle}>
+      <div css={contentWrapperStyle}>
         <SearchBar handleSearchContact={handleSearchContact} />
         <ConditionalRender condition={!searchQuery}>
           <div css={contactListSectionStyle}>
@@ -235,30 +236,6 @@ const ContactsListWrapper = () => {
     </>
   );
 };
-
-const contactsListWrapperStyle = css`
-  background-color: white;
-  padding: 20px;
-  width: 100%;
-  height: 100%;
-  max-width: 750px;
-  margin: 0 auto;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  @media (max-width: 600px) {
-    border-radius: 0;
-    height: 100vh;
-  }
-
-  @media (min-width: 600px) {
-    max-height: 90vh;
-  }
-`;
 
 const headingWrapperStyle = css`
   display: flex;

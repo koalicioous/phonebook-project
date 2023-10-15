@@ -58,3 +58,10 @@ export type ContactListQueryVariables = {
   // Contact Bool Exp
   where?: FixMeLater;
 };
+
+export type EditContactInput = Omit<ContactInput, "numbers"> & {
+  numbers: {
+    id?: number;
+    value: string;
+  }[];
+};

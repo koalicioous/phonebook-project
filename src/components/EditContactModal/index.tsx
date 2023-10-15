@@ -18,7 +18,11 @@ import {
   editContactModalVisible,
 } from "@/services/contact/atom";
 import { toast } from "react-hot-toast";
-import { Contact, ContactInput } from "@/services/contact/types";
+import {
+  Contact,
+  ContactInput,
+  EditContactInput,
+} from "@/services/contact/types";
 import { ApolloError, gql } from "@apollo/client";
 import { useEffect } from "react";
 import AddPhoneToContactModal from "../AddPhoneToContactModal";
@@ -26,13 +30,11 @@ import useUpdatePhoneNumber from "@/services/contact/hooks/useUpdatePhoneNumber"
 import { cache } from "@/lib/ApolloClient";
 import { contactToRawFormat } from "@/utils/formatter";
 import useUpdateContactMutation from "@/services/contact/hooks/useUpdateContactMutation";
-
-type EditContactInput = Omit<ContactInput, "numbers"> & {
-  numbers: {
-    id?: number;
-    value: string;
-  }[];
-};
+import {
+  inputStyle,
+  numberUpdateButtonStyle,
+  saveButtonStyle,
+} from "@/styles/SharedCSS";
 
 const EditContactModal = ({
   handleUpdateSavedContact,
@@ -283,7 +285,7 @@ const EditContactModal = ({
                   First Name
                 </label>
                 <input
-                  css={input}
+                  css={inputStyle}
                   id="firstName"
                   placeholder="First Name"
                   {...register("firstName", {
@@ -310,7 +312,7 @@ const EditContactModal = ({
                   Last Name
                 </label>
                 <input
-                  css={input}
+                  css={inputStyle}
                   id="lastName"
                   placeholder="Last Name"
                   {...register("lastName", {
@@ -358,7 +360,7 @@ const EditContactModal = ({
                             }}
                           >
                             <input
-                              css={input}
+                              css={inputStyle}
                               placeholder="Contact's Number"
                               {...field}
                             />
@@ -369,7 +371,7 @@ const EditContactModal = ({
                               }
                             >
                               <button
-                                css={updateButton}
+                                css={numberUpdateButtonStyle}
                                 onClick={() => {
                                   handleEditPhoneNumber(index, field.value);
                                 }}
@@ -414,7 +416,7 @@ const EditContactModal = ({
             >
               <button
                 type="submit"
-                css={saveButton}
+                css={saveButtonStyle}
                 disabled={updatingContactData}
               >
                 {updatingContactData ? "Loading..." : "Update Contact"}
@@ -505,24 +507,6 @@ const label = css`
   text-align: right;
 `;
 
-const input = css`
-  width: 100%;
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  padding: 0 10px;
-  font-size: 15px;
-  line-height: 1;
-  color: #334155;
-  box-shadow: 0 0 0 1px #9ca3af;
-  height: 35px;
-  &focus {
-    box-shadow: 0 0 0 2px #6b7280;
-  }
-`;
-
 const iconButton = css`
   font-family: inherit;
   border-radius: 100%;
@@ -543,20 +527,6 @@ const iconButton = css`
   }
 `;
 
-const saveButton = css`
-  border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background-color: #1e293b;
-  font-size: 14px;
-  font-weight: 600;
-  color: #f8fafc;
-  cursor: pointer;
-  &:hover {
-    background-color: #0f172a;
-  }
-`;
-
 const errorMessageText = css`
   color: #b91c1c;
   font-size: 12px;
@@ -566,18 +536,4 @@ const errorMessageText = css`
 const numberErrorMessageText = css`
   color: #b91c1c;
   font-size: 12px;
-`;
-
-const updateButton = css`
-  border: none;
-  padding: 8px 8px;
-  border-radius: 8px;
-  background-color: #e2e8f0;
-  font-size: 10px;
-  font-weight: 600;
-  color: #0f172a;
-  cursor: pointer;
-  &:hover {
-    background-color: #cbd5e1;
-  }
 `;

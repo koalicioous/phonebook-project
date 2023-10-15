@@ -20,6 +20,30 @@ export const formatRawContact = (rawContacts?: RawContact[]): Contact[] => {
   });
 };
 
+export const formatRawContactDetail = (rawContact?: RawContact): Contact => {
+  if (!rawContact) {
+    return {
+      createdAt: "",
+      firstName: "",
+      id: 0,
+      lastName: "",
+      phones: [],
+    };
+  }
+  return {
+    createdAt: rawContact.created_at,
+    firstName: rawContact.first_name,
+    id: rawContact.id,
+    lastName: rawContact.last_name,
+    phones: rawContact.phones.map((rawPhone) => {
+      return {
+        id: rawPhone.id,
+        number: rawPhone.number,
+      };
+    }),
+  };
+};
+
 export const contactToRawFormat = (contact: Contact): RawContact => {
   return {
     __typename: "contact",
