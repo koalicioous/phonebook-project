@@ -18,6 +18,7 @@ import Link from "next/link";
 
 type ContactListItemProps = {
   contact: Contact;
+  // eslint-disable-next-line no-unused-vars
   onFavoriteButtonClicked: (contact: Contact) => void;
   favorite: boolean;
 };
@@ -52,7 +53,12 @@ const ContactListItem = ({
 
   return (
     <div css={contactListItemStyle}>
-      <div>
+      <Link
+        href={`/contact/${contact.id}`}
+        css={{
+          flexGrow: 1,
+        }}
+      >
         <div css={nameWrapperStyle}>
           <ConditionalRender condition={!!firstName}>
             <HighlightMatch match={searchQuery}>{firstName}</HighlightMatch>
@@ -103,7 +109,7 @@ const ContactListItem = ({
             </ConditionalRender>
           </div>
         </div>
-      </div>
+      </Link>
       <div
         css={{
           display: "flex",
@@ -180,6 +186,7 @@ const contactListItemStyle = css`
   justify-content: space-between;
   align-items: center;
   padding: 10px;
+  gap: 10px;
   border-bottom: 1px solid #e0e0e0;
   cursor: pointer;
   &:hover {

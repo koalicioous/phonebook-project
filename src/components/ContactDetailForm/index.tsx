@@ -23,7 +23,6 @@ import {
   numberUpdateButtonStyle,
   saveButtonStyle,
 } from "@/styles/SharedCSS";
-import ConditionalRender from "../ConditionalRender";
 import { useSetAtom } from "jotai";
 import {
   addPhoneToContactModalVisible,
@@ -143,7 +142,7 @@ const ContactDetailForm = () => {
           if (contactIsSaved(contact.id)) {
             handleUpdateSavedContact(contact.id, {
               ...contact,
-              phones: contact.phones.map((item, idx) => {
+              phones: contact.phones.map((item) => {
                 if (item.id === contact.phones[index].id) {
                   return {
                     id: item.id,
@@ -386,15 +385,6 @@ const ContactDetailForm = () => {
     </>
   );
 };
-
-const nameStyle = css`
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #1f2937;
-  width: 100%;
-  overflow-wrap: break-word;
-`;
 
 const menuButtonStyle = css`
   display: flex;

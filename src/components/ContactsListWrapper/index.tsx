@@ -25,7 +25,7 @@ import { contentWrapperStyle } from "@/styles/SharedCSS";
 
 const ContactsListWrapper = () => {
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
-  const [searchField, setSearchField] = useAtom(searchFieldAtom);
+  const [searchField] = useAtom(searchFieldAtom);
   const [deleteModalAtom, setDeleteModalAtom] = useAtom(
     deleteConfirmationModalVisible
   );
@@ -176,25 +176,19 @@ const ContactsListWrapper = () => {
             </ConditionalRender>
           </div>
           <div css={scrollableListStyle}>
-            {contacts
-              .filter((item) => {
-                return true;
-                // TODO: Remove filter logic from here
-                return !savedContactIds.includes(item.id);
-              })
-              .map((contact) => {
-                const saved = savedContactIds.includes(contact.id);
-                return (
-                  <ContactListItem
-                    key={contact.id}
-                    contact={contact}
-                    onFavoriteButtonClicked={
-                      saved ? removeFromFavorite : saveToFavorite
-                    }
-                    favorite={saved ? true : false}
-                  />
-                );
-              })}
+            {contacts.map((contact) => {
+              const saved = savedContactIds.includes(contact.id);
+              return (
+                <ContactListItem
+                  key={contact.id}
+                  contact={contact}
+                  onFavoriteButtonClicked={
+                    saved ? removeFromFavorite : saveToFavorite
+                  }
+                  favorite={saved ? true : false}
+                />
+              );
+            })}
             {loading && <LoadingAnimation />}
             {!hasNextPage && !loading && !searchQuery && (
               <div

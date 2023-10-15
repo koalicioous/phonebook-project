@@ -8,14 +8,13 @@ import {
   searchFieldAtom,
   searchQueryAtom,
 } from "@/services/contact/atom";
-import useGetContactList from "@/services/contact/hooks/useGetContactList";
 
 type SearchBarProps = {
+  // eslint-disable-next-line no-unused-vars
   handleSearchContact: (e: ChangeEvent<HTMLInputElement>) => void;
 };
 
 const SearchBar = ({ handleSearchContact }: SearchBarProps) => {
-  const { refetch } = useGetContactList();
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
   const setSearchField = useSetAtom(searchFieldAtom);
   return (
