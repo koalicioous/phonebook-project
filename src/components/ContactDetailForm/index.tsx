@@ -23,9 +23,11 @@ import {
   numberUpdateButtonStyle,
   saveButtonStyle,
 } from "@/styles/SharedCSS";
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import {
   addPhoneToContactModalVisible,
+  deleteConfirmationModalData,
+  deleteConfirmationModalVisible,
   editContactModalDataAtom,
 } from "@/services/contact/atom";
 import useUpdatePhoneNumber from "@/services/contact/hooks/useUpdatePhoneNumber";
@@ -34,6 +36,7 @@ import useUpdateContactMutation from "@/services/contact/hooks/useUpdateContactM
 import { toast } from "react-hot-toast";
 import { useEffect } from "react";
 import AddPhoneToContactModal from "../AddPhoneToContactModal";
+import DeleteConfirmationModal from "../DeleteConfirmationModal";
 
 const ContactDetailForm = () => {
   const { id } = useParams();
@@ -51,6 +54,10 @@ const ContactDetailForm = () => {
       numbers: [],
     },
   });
+  const [deleteModalVisible, setDeleteModalVisible] = useAtom(
+    deleteConfirmationModalVisible
+  );
+  const setDeleteContactData = useSetAtom(deleteConfirmationModalData);
   const { contact, loading, refetch } = useGetContactById({
     variables: {
       id,
@@ -177,9 +184,16 @@ const ContactDetailForm = () => {
     setAddNumberModalVisible(false);
   };
 
+  // eslint-disable-next-line no-unused-vars
+  const handleContactDeleted = (contact: Contact) => {
+    setDeleteModalVisible(false);
+    router.push("/");
+  };
+
   useEffect(() => {
     if (contact) {
       setContactData(contact);
+      setDeleteContactData(contact);
       setValue("firstName", contact.firstName);
       setValue("lastName", contact.lastName);
       setValue(
@@ -187,12 +201,17 @@ const ContactDetailForm = () => {
         contact.phones.map((phone) => ({ id: phone.id, value: phone.number }))
       );
     }
-  }, [contact, setValue, setContactData]);
+  }, [contact, setValue, setContactData, setDeleteContactData]);
 
   if (loading) return <LoadingAnimation />;
 
   return (
     <>
+      <DeleteConfirmationModal
+        open={deleteModalVisible}
+        onOpenChange={setDeleteModalVisible}
+        onSuccess={handleContactDeleted}
+      />
       <AddPhoneToContactModal onNewNumberAdded={handleNewNumberAdded} />
       <div>
         <div
@@ -226,7 +245,12 @@ const ContactDetailForm = () => {
               gap: "8px",
             }}
           >
-            <button css={menuButtonStyle}>
+            <button
+              css={menuButtonStyle}
+              onClick={() => {
+                setDeleteModalVisible(true);
+              }}
+            >
               <TrashIcon />
               <span css={menuButtonTextStyle}>Delete</span>
             </button>

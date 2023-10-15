@@ -1,6 +1,8 @@
+/* eslint-disable no-unused-vars */
 /** @jsxImportSource @emotion/react */
 
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import * as React from "react";
 import styled from "@emotion/styled";
 import { keyframes, css } from "@emotion/react";
 import { useAtom, useSetAtom } from "jotai";
@@ -9,7 +11,6 @@ import {
   deleteConfirmationModalVisible,
 } from "@/services/contact/atom";
 import useDeleteContactMutation from "@/services/contact/hooks/useDeleteContactMutation";
-import useManageSavedContacts from "@/services/contact/hooks/useManageSavedContacts";
 import { Contact } from "@/services/contact/types";
 import { toast } from "react-hot-toast";
 
@@ -111,7 +112,6 @@ const DeleteConfirmationModal = ({
 }) => {
   const [contact] = useAtom(deleteConfirmationModalData);
   const setModalOpen = useSetAtom(deleteConfirmationModalVisible);
-  const { removeSavedContact } = useManageSavedContacts();
 
   const contactNameCopy =
     !!contact.firstName || !!contact.lastName
