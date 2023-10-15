@@ -19,6 +19,7 @@ import {
 } from "@/utils/helper";
 import {
   inputStyle,
+  nameTittleStyle,
   numberUpdateButtonStyle,
   saveButtonStyle,
 } from "@/styles/SharedCSS";
@@ -230,10 +231,10 @@ const ContactDetailForm = () => {
               <TrashIcon />
               <span css={menuButtonTextStyle}>Delete</span>
             </button>
-            <button css={menuButtonStyle}>
+            <Link href="/create" css={menuButtonStyle}>
               <PlusCircledIcon />
               <span css={menuButtonTextStyle}>Add New Contact</span>
-            </button>
+            </Link>
           </div>
         </div>
         <form onSubmit={handleSubmit(handleUpdateContactInfo)}>
@@ -385,12 +386,6 @@ const ContactDetailForm = () => {
     </>
   );
 };
-
-const nameTittleStyle = css`
-  font-size: 14px;
-  color: #6b7280;
-  margin-bottom: 8px;
-`;
 
 const nameStyle = css`
   font-size: 20px;

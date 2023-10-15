@@ -153,7 +153,18 @@ const ContactsListWrapper = () => {
             </ConditionalRender>
           </div>
         </ConditionalRender>
-        <div css={contactListSectionStyle}>
+        <div
+          css={css`
+            ${contactListSectionStyle};
+            ${!!searchQuery &&
+            `
+              max-height: calc(100vh - 80px) !important;
+              @media (min-width: 768px) {
+                max-height: calc(90vh - 80px) !important;
+              }
+            `}
+          `}
+        >
           <div css={headingWrapperStyle}>
             <h1 css={headingStyle}>
               {!searchQuery ? "Contacts List" : "Search Result"}

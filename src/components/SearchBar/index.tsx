@@ -2,8 +2,12 @@
 
 import { ChangeEvent } from "react";
 import { css } from "@emotion/react";
-import { useSetAtom } from "jotai";
-import { SearchFields, searchFieldAtom } from "@/services/contact/atom";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import {
+  SearchFields,
+  searchFieldAtom,
+  searchQueryAtom,
+} from "@/services/contact/atom";
 import useGetContactList from "@/services/contact/hooks/useGetContactList";
 
 type SearchBarProps = {
@@ -12,6 +16,7 @@ type SearchBarProps = {
 
 const SearchBar = ({ handleSearchContact }: SearchBarProps) => {
   const { refetch } = useGetContactList();
+  const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
   const setSearchField = useSetAtom(searchFieldAtom);
   return (
     <div
@@ -27,9 +32,12 @@ const SearchBar = ({ handleSearchContact }: SearchBarProps) => {
         onChange={(e) => {
           setSearchField(e.target.value as SearchFields);
           setTimeout(() => {
-            refetch;
+            handleSearchContact({
+              target: { value: searchQuery },
+            } as ChangeEvent<HTMLInputElement>);
           }, 200);
         }}
+        value={useAtomValue(searchFieldAtom)}
       >
         <option value="first_name">First Name</option>
         <option value="last_name">Last Name</option>
@@ -38,8 +46,12 @@ const SearchBar = ({ handleSearchContact }: SearchBarProps) => {
       <input
         type="text"
         css={input}
+        value={searchQuery}
         placeholder="Type to search contact"
-        onChange={handleSearchContact}
+        onChange={(e) => {
+          setSearchQuery(e.target.value);
+          handleSearchContact(e);
+        }}
       />
     </div>
   );

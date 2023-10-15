@@ -77,3 +77,9 @@ export const saveButtonStyle = css`
     background-color: #0f172a;
   }
 `;
+
+export const nameTittleStyle = css`
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
+`;
