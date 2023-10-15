@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 
 export const pageContainerStyle = css`
   display: flex;
-  min-height: 100vh; /* Equivalent to min-h-screen in Tailwind */
+  min-height: 100dvh; /* Equivalent to min-h-screen in Tailwind */
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -17,18 +17,18 @@ export const contentWrapperStyle = css`
   margin: 0 auto;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   gap: 12px;
 
   @media (max-width: 600px) {
     border-radius: 0;
-    height: 100vh;
+    height: 100dvh;
   }
 
   @media (min-width: 600px) {
-    max-height: 90vh;
+    max-height: 90dvh;
   }
 `;
 

@@ -158,9 +158,9 @@ const ContactsListWrapper = () => {
             ${contactListSectionStyle};
             ${!!searchQuery &&
             `
-              max-height: calc(100vh - 80px) !important;
+              max-height: calc(100dvh - 80px) !important;
               @media (min-width: 768px) {
-                max-height: calc(90vh - 80px) !important;
+                max-height: calc(90dvh - 80px) !important;
               }
             `}
           `}
@@ -264,7 +264,7 @@ const fadeInOut = keyframes`
   }
 
   to {
-    max-height: 50vh; /* Adjust max-height as needed */
+    max-height: 50dvh; /* Adjust max-height as needed */
     opacity: 1;
   }
 `;
@@ -284,10 +284,10 @@ const addButtonStyle = css`
 
 const contactListSectionStyle = css`
   height: 100%;
-  max-height: calc(50vh - 40px);
+  max-height: calc(50dvh - 40px);
   animation: ${fadeInOut} 0.3s ease;
   @media (min-width: 600px) {
-    max-height: calc(45vh - 40px);
+    max-height: calc(45dvh - 40px);
   }
 `;
 

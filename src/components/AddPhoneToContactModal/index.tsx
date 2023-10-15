@@ -176,7 +176,7 @@ const DialogContent = styled(Dialog.Content)`
   transform: translate(-50%, -50%);
   width: 90vw;
   max-width: 500px;
-  max-height: 85vh;
+  max-height: 85dvh;
   padding: 25px;
   overflow: auto;
   animation: ${contentShowKeyframes} 150ms cubic-bezier(0.16, 1, 0.3, 1);
