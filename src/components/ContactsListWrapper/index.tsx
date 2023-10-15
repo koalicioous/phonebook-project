@@ -293,7 +293,7 @@ const contactListSectionStyle = css`
 
 const scrollableListStyle = css`
   overflow-y: auto;
-  height: calc(100% - 40px);
+  height: calc(95% - 40px);
 `;
 
 const loadMoreButtonStyle = css`
