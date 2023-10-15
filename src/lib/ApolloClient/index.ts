@@ -1,4 +1,3 @@
-import { Contact } from "@/services/contact/types";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 const client = new ApolloClient({

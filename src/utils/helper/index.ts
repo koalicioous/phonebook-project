@@ -8,6 +8,7 @@ import LocalStorageService from "@/services/common/LocalStorage";
 import { ContactsLocalStorageKeys } from "@/services/contact/types/enums";
 
 export const checkSpecialCharacter = (value: string) => {
+  // eslint-disable-next-line no-useless-escape
   const invalidCharacters = /^[^~!@#$%^&*()_+|{}“:?><[\]\\;’,.\/=-]+$/;
   return invalidCharacters.test(value);
 };

@@ -1,4 +1,5 @@
 "use client";
+import * as React from "react";
 import client from "@/lib/ApolloClient";
 import { ApolloProvider } from "@apollo/client";
 import { ReactNode } from "react";

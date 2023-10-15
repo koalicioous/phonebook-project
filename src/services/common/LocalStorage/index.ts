@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 interface LocalStorageServiceInterface<T> {
   get<K extends keyof T>(key: K): T[K] | null;
 

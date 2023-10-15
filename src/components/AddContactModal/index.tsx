@@ -18,8 +18,9 @@ import { toast } from "react-hot-toast";
 import { ContactInput } from "@/services/contact/types";
 import { ApolloError } from "@apollo/client";
 import useGetContactAggregate from "@/services/contact/hooks/useGetContactAggregate";
+import { ReactNode } from "react";
 
-const AddContactModal = ({ children }: { children: React.ReactNode }) => {
+const AddContactModal = ({ children }: { children: ReactNode }) => {
   const { refetch: refetchCount } = useGetContactAggregate();
   const [createModalVisible, setCreateModalVisible] = useAtom(
     createContactModalVisible

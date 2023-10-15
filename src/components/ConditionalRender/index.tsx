@@ -1,7 +1,9 @@
+import { ReactNode } from "react";
+
 type ConditionalRenderProps = {
-  children: React.ReactNode;
+  children: ReactNode;
   condition: boolean;
-  fallback?: React.ReactNode;
+  fallback?: ReactNode;
 };
 
 const ConditionalRender = ({

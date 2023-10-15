@@ -39,6 +39,7 @@ import {
 const EditContactModal = ({
   handleUpdateSavedContact,
 }: {
+  // eslint-disable-next-line no-unused-vars
   handleUpdateSavedContact: (id: number, contact: Contact) => void;
 }) => {
   const [editContactVisible, setEditContactModalVisible] = useAtom(
@@ -47,7 +48,7 @@ const EditContactModal = ({
   const setAddNumberModalVisible = useSetAtom(addPhoneToContactModalVisible);
   const [contactData, setContactData] = useAtom(editContactModalDataAtom);
 
-  const [updateContactData, { loading: updatingContactData, error }] =
+  const [updateContactData, { loading: updatingContactData }] =
     useUpdateContactMutation({
       onCompleted: () => {
         reset();
@@ -167,7 +168,7 @@ const EditContactModal = ({
           if (contactIsSaved(contactData.id)) {
             handleUpdateSavedContact(contactData.id, {
               ...contactData,
-              phones: contactData.phones.map((item, idx) => {
+              phones: contactData.phones.map((item) => {
                 if (item.id === contactData.phones[index].id) {
                   return {
                     id: item.id,

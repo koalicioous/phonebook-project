@@ -2,7 +2,7 @@
 import { getLocalStorageValue, setLocalStorageValue } from "@/utils/helper";
 import { Contact } from "../types";
 import { ContactsLocalStorageKeys } from "../types/enums";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const useManageSavedContacts = () => {
   const [savedContacts, setSavedContacts] = useState<Contact[]>(

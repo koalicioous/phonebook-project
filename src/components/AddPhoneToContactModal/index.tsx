@@ -19,6 +19,7 @@ import useAddPhoneToContactMutation from "@/services/contact/hooks/useAddPhoneTo
 const AddPhoneToContactModal = ({
   onNewNumberAdded,
 }: {
+  // eslint-disable-next-line no-unused-vars
   onNewNumberAdded: (id: number, number: string) => void;
 }) => {
   const [modalVisible, setModalVisible] = useAtom(
@@ -201,13 +202,6 @@ const fieldset = css`
   margin-bottom: 2px;
 `;
 
-const label = css`
-  font-size: 15px;
-  color: ;
-  width: 90px;
-  text-align: right;
-`;
-
 const input = css`
   width: 100%;
   flex: 1;
@@ -263,23 +257,4 @@ const saveButton = css`
 const errorMessageText = css`
   color: #b91c1c;
   font-size: 12px;
-`;
-
-const numberErrorMessageText = css`
-  color: #b91c1c;
-  font-size: 12px;
-`;
-
-const updateButton = css`
-  border: none;
-  padding: 8px 8px;
-  border-radius: 8px;
-  background-color: #e2e8f0;
-  font-size: 10px;
-  font-weight: 600;
-  color: #0f172a;
-  cursor: pointer;
-  &:hover {
-    background-color: #cbd5e1;
-  }
 `;
