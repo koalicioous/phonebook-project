@@ -47,6 +47,7 @@ const SearchBar = ({ handleSearchContact }: SearchBarProps) => {
         css={input}
         value={searchQuery}
         placeholder="Type to search contact"
+        data-testid="search-input"
         onChange={(e) => {
           setSearchQuery(e.target.value);
           handleSearchContact(e);

@@ -2,5 +2,13 @@
   "extends": ["eslint:recommended","next/core-web-vitals"],
   "rules": {
     "no-async-promise-executor": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx"],
+      "rules": {
+        "no-async-promise-executor": "off" 
+      }
+    }
+  ]
 }

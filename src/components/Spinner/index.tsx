@@ -25,8 +25,8 @@ const Spinner = styled.div`
 
 const LoadingAnimation = () => {
   return (
-    <SpinnerContainer>
-      <Spinner />
+    <SpinnerContainer data-testid="spinner-container">
+      <Spinner data-testid="spinner" />
     </SpinnerContainer>
   );
 };

@@ -22,13 +22,17 @@ import {
 import Link from "next/link";
 import { CaretLeftIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
+import { useSetAtom } from "jotai";
+import { searchQueryAtom } from "@/services/contact/atom";
 
 const CreateContactForm = () => {
   const router = useRouter();
+  const setSearchQuery = useSetAtom(searchQueryAtom);
   const { refetch: refetchCount } = useGetContactAggregate();
   const { createContact, loading } = useCreateContactMutation({
     onCompleted: () => {
       refetchCount();
+      setSearchQuery("");
       reset();
       router.push("/");
     },
